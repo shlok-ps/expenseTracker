@@ -1,0 +1,38 @@
+export const themes = {
+  latte: {
+    name: 'latte',
+    primary: '#dc8a78',
+    background: '#eff1f5',
+    text: '#4c4f69',
+    credit: '#40a02b',
+    debit: '#d20f39',
+    duplicate: '#f5e0dc',
+  },
+  frappe: {
+    name: 'frappe',
+    primary: '#ca9ee6',
+    background: '#303446',
+    text: '#c6d0f5',
+    credit: '#a6d189',
+    debit: '#e78284',
+    duplicate: '#f2d5cf',
+  },
+  macchiato: {
+    name: 'macchiato',
+    primary: '#f4b8e4',
+    background: '#24273a',
+    text: '#cad3f5',
+    credit: '#a6da95',
+    debit: '#ed8796',
+    duplicate: '#f4dbd6',
+  },
+  mocha: {
+    name: 'mocha',
+    primary: '#cba6f7',
+    background: '#1e1e2e',
+    text: '#cdd6f4',
+    credit: '#a6e3a1',
+    debit: '#f38ba8',
+    duplicate: '#f5c2e7',
+  },
+};
