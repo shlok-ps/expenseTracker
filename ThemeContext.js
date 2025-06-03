@@ -1,48 +1,32 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { themes } from './themes';
+// ThemeContext.js
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { catppuccin } from './theme/catppuccin';
+import { getTheme, setTheme } from './database/theme';
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [themeName, setThemeName] = useState('latte');
-  const [theme, setTheme] = useState(themes['latte']);
+  const [variant, setVariant] = useState('mocha');
+  const [theme, setThemeObj] = useState(catppuccin.mocha);
 
   useEffect(() => {
-    const loadTheme = async () => {
-      try {
-        const storedThemeName = await AsyncStorage.getItem('themeName');
-        if (storedThemeName && themes[storedThemeName]) {
-          setThemeName(storedThemeName);
-          setTheme(themes[storedThemeName]);
-        }
-      } catch (error) {
-        console.error('Failed to load theme from storage:', error);
-      }
+    const loadTheme = () => {
+      const storedVariant = getTheme(); // from Realm
+      setVariant(storedVariant);
+      setThemeObj(catppuccin[storedVariant]);
     };
     loadTheme();
   }, []);
 
-  useEffect(() => {
-    const saveTheme = async () => {
-      try {
-        await AsyncStorage.setItem('themeName', themeName);
-      } catch (error) {
-        console.error('Failed to save theme to storage:', error);
-      }
-    };
-    saveTheme();
-  }, [themeName]);
-
-  const changeTheme = (newThemeName) => {
-    if (themes[newThemeName]) {
-      setThemeName(newThemeName);
-      setTheme(themes[newThemeName]);
-    }
+  const setThemeVariant = (newVariant) => {
+    setVariant(newVariant);
+    setThemeObj(catppuccin[newVariant]);
+    setTheme(newVariant); // save to Realm
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, themeName, changeTheme }}>
+    <ThemeContext.Provider value={{ theme, variant, setThemeVariant }}>
       {children}
     </ThemeContext.Provider>
   );
