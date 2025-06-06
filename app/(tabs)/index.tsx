@@ -1,9 +1,3 @@
-import { View, Text } from 'react-native';
+import HomeScreen from 'src/screens/HomeScreen';
 
-
-export default function TabIndex() {
-  return (
-    <View>
-      <Text>Hello Tabs</Text></View>
-  )
-}
+export default HomeScreen;

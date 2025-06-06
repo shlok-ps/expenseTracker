@@ -11,6 +11,8 @@ export interface ITheme {
   yellow: string,
   blue: string,
   accent: string,
+  mantle: string,
+  crust: string;
 }
 export const catppuccin: { [key: string]: ITheme } = {
   latte: {
@@ -24,6 +26,8 @@ export const catppuccin: { [key: string]: ITheme } = {
     yellow: '#df8e1d',
     blue: '#1e66f5',
     accent: '#8839ef',
+    mantle: '#e6e9ef',
+    crust: '#dce0e8'
   },
   frappe: {
     background: '#303446',
@@ -36,6 +40,8 @@ export const catppuccin: { [key: string]: ITheme } = {
     yellow: '#e5c890',
     blue: '#8caaee',
     accent: '#ca9ee6',
+    mantle: '#292c3c',
+    crust: '#232634'
   },
   macchiato: {
     background: '#24273a',
@@ -48,6 +54,8 @@ export const catppuccin: { [key: string]: ITheme } = {
     yellow: '#eed49f',
     blue: '#8aadf4',
     accent: '#c6a0f6',
+    mantle: '#1e2030',
+    crust: '#181926'
   },
   mocha: {
     background: '#1e1e2e',
@@ -60,5 +68,7 @@ export const catppuccin: { [key: string]: ITheme } = {
     yellow: '#f9e2af',
     blue: '#89b4fa',
     accent: '#cba6f7',
+    mantle: '#181825',
+    crust: '#11111b'
   },
 };
