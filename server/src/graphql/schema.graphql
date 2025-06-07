@@ -1,0 +1,30 @@
+scalar Date
+
+type Transaction {
+  id: ID!
+  amount: Float!
+  type: String!
+  category: String!
+  date: Date!
+  description: String
+  isDuplicate: Boolean
+  relatedGroupId: String
+}
+
+type Query {
+  transactions: [Transaction!]!
+}
+
+type Mutation {
+  addTransaction(
+    id: ID,
+    amount: Float!
+    type: String!
+    category: String!
+    date: Date!
+    description: String
+  ): Transaction!
+
+  flagDuplicate(id: ID!, value: Boolean!): Transaction
+}
+
