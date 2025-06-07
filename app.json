@@ -4,5 +4,8 @@
   },
   "plugins": [
     "expo-router"
-  ]
+  ],
+  "ios": {
+    "bundleIdentifier": "com.anonymous.expensetracker"
+  }
 }

@@ -1,6 +1,6 @@
 // database/theme.js
 
-import realm from './index';
+import realm from 'src/database/index';
 
 export const setThemeToDB = (variant: string) => {
   realm.write(() => {

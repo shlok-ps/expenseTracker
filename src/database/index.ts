@@ -1,7 +1,7 @@
 // database/index.js
 
 import Realm from 'realm';
-import { TransactionSchema, ThemeSchema } from './schema';
+import { TransactionSchema, ThemeSchema } from 'src/database/schema';
 
 const realm = new Realm({
   schema: [TransactionSchema, ThemeSchema],

@@ -2,17 +2,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { useAppInit } from 'src/App';
 import { useTheme } from 'src/ThemeContext';
 import { getTransactions, ITransaction } from 'src/database/transactions';
 
 const HomeScreen = () => {
+  useAppInit()
   const { theme } = useTheme();
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
     const data = getTransactions();
     console.log('data: ', data)
-    //    setTransactions([...data]); // Realm collections need to be spread into array
+    setTransactions([...data]); // Realm collections need to be spread into array
   }, []);
 
   const renderItem = ({ item }: { item: ITransaction }) => (
@@ -47,7 +49,7 @@ const HomeScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.header, { color: theme.text }]}>Transactions</Text>
+      <Text style={[styles.header, { color: theme.text }]}>Home</Text>
       <FlatList
         data={transactions}
         keyExtractor={(item) => item.id}
