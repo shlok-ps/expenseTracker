@@ -1,15 +1,21 @@
 import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
 
 export const transactionResolvers = {
   Query: {
-    transactions: () => prisma.transaction.findMany(),
+    transactions: (_: any, __: any, { prisma, userId }: any) => {
+      if (!userId) throw new Error('Not authenticated')
+      return prisma.transaction.findMany({ where: { userId } })
+    },
   },
   Mutation: {
-    addTransaction: async (_: any, args: any) => {
-      return prisma.transaction.create({ data: args })
+    addTransaction: (_: any, args: any, { prisma, userId }: any) => {
+      if (!userId) throw new Error('Not authenticated')
+      return prisma.transaction.create({
+        data: { ...args, userId }
+      })
     },
-    flagDuplicate: async (_: any, { id, value }: any) => {
+    flagDuplicate: (_: any, { id, value }: any, { prisma, userId }: any) => {
+      if (!userId) throw new Error('Not authenticated')
       return prisma.transaction.update({
         where: { id },
         data: { isDuplicate: value }

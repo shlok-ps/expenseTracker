@@ -28,3 +28,22 @@ type Mutation {
   flagDuplicate(id: ID!, value: Boolean!): Transaction
 }
 
+type AuthPayload {
+  token: String!
+}
+
+type Mutation {
+  signup(email: String!, password: String!): AuthPayload!
+  login(email: String!, password: String!): AuthPayload!
+
+  addTransaction(
+    amount: Float!
+    type: String!
+    category: String!
+    date: String!
+    description: String
+  ): Transaction!
+
+  flagDuplicate(id: ID!, value: Boolean!): Transaction
+}
+

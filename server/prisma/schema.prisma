@@ -17,5 +17,15 @@ model Transaction {
   isDuplicate     Boolean  @default(false)
   relatedGroupId  String?
   createdAt       DateTime @default(now())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String
+  createdAt DateTime @default(now())
+  transactions Transaction[]
 }
 
