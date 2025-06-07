@@ -1,5 +1,3 @@
-import { PrismaClient } from '@prisma/client'
-
 export const transactionResolvers = {
   Query: {
     transactions: (_: any, __: any, { prisma, userId }: any) => {
@@ -11,7 +9,14 @@ export const transactionResolvers = {
     addTransaction: (_: any, args: any, { prisma, userId }: any) => {
       if (!userId) throw new Error('Not authenticated')
       return prisma.transaction.create({
-        data: { ...args, userId }
+        data: {
+          ...args,
+          user: {
+            connect: {
+              id: userId
+            }
+          }
+        }
       })
     },
     flagDuplicate: (_: any, { id, value }: any, { prisma, userId }: any) => {

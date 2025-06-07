@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { verifyToken } from './utils/auth'
+import { verifyAccessToken } from './utils/auth'
 import { Request } from 'express';
 
 export const prisma = new PrismaClient()
@@ -18,7 +18,7 @@ export const createContext = ({ req }: { req: Request }): Context => {
   if (auth) {
     try {
       const token = auth.replace('Bearer ', '')
-      const decoded = verifyToken(token) as { userId: string }
+      const decoded = verifyAccessToken(token) as { userId: string }
       return { prisma, userId: decoded.userId }
     } catch (e) {
       return { prisma }
