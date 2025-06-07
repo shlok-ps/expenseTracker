@@ -5,6 +5,8 @@ import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { useAppInit } from 'src/App';
 import { useTheme } from 'src/ThemeContext';
 import { getTransactions, ITransaction } from 'src/database/transactions';
+import realm from 'src/database'
+import RealmPlugin from 'realm-flipper-plugin-device'
 
 const HomeScreen = () => {
   useAppInit()
@@ -16,6 +18,7 @@ const HomeScreen = () => {
     console.log('data: ', data)
     setTransactions([...data]); // Realm collections need to be spread into array
   }, []);
+  console.log("realm: ", realm)
 
   const renderItem = ({ item }: { item: ITransaction }) => (
     <View
@@ -49,6 +52,7 @@ const HomeScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <RealmPlugin realms={[realm]} />
       <Text style={[styles.header, { color: theme.text }]}>Home</Text>
       <FlatList
         data={transactions}

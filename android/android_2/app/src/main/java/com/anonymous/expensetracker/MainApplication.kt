@@ -2,6 +2,7 @@ package com.anonymous.expensetracker
 
 import android.app.Application
 import android.content.res.Configuration
+import android.util.Log
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -48,6 +49,10 @@ class MainApplication : Application(), ReactApplication {
       load()
     }
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
+
+    if (BuildConfig.DEBUG) {
+        ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
+    }
   }
 
   override fun onConfigurationChanged(newConfig: Configuration) {

@@ -1,5 +1,6 @@
 import { Platform, PermissionsAndroid } from 'react-native';
 import SmsAndroid from 'react-native-get-sms-android';
+import { addTransaction } from 'src/database/transactions';
 
 
 export const requestSMSPermission = async () => {
@@ -38,7 +39,7 @@ export async function getTransactionsFromSMS(): Promise<any[]> {
     SmsAndroid.list(
       JSON.stringify({
         box: 'inbox',
-        maxCount: 100,
+        count: 100
       }),
       (fail) => reject(fail),
       (count, smsList) => {
@@ -49,3 +50,17 @@ export async function getTransactionsFromSMS(): Promise<any[]> {
     );
   });
 }
+
+export const onSMSRecieved = (msg: string) => {
+  console.log(msg);
+}
+
+export const syncMessages = async () => {
+  const granted = await requestSMSPermission();
+  if (granted) {
+    const transanctions = await getTransactionsFromSMS();
+    console.log("Transactions From SMS: ", transanctions);
+    addTransaction(transactions)
+  }
+}
+

@@ -3,29 +3,35 @@
 import realm from './index';
 import { v4 as uuidv4 } from 'uuid';
 
+export enum TransactionType {
+  CREDIT,
+  DEBIT
+}
 export interface ITransaction {
   id: string;
-  date: any;
-  description: any;
-  category: any;
-  amount: any;
-  transactionType: any;
+  date: Date;
+  description: string;
+  category: string;
+  amount: number;
+  transactionType: TransactionType;
   isDuplicate: boolean;
   relatedIds: string[];
 }
 
-export const addTransaction = (tx: ITransaction) => {
+export const addTransaction = (txs: ITransaction[]) => {
   realm.write(() => {
-    realm.create('Transaction', {
-      id: uuidv4(),
-      date: tx.date,
-      description: tx.description,
-      category: tx.category,
-      amount: tx.amount,
-      transactionType: tx.transactionType,
-      isDuplicate: tx.isDuplicate || false,
-      relatedIds: tx.relatedIds || [],
-    });
+    for (let tx of txs) {
+      realm.create('Transaction', {
+        id: tx.id,
+        date: tx.date,
+        description: tx.description,
+        category: tx.category,
+        amount: tx.amount,
+        transactionType: tx.transactionType,
+        isDuplicate: tx.isDuplicate || false,
+        relatedIds: tx.relatedIds || [],
+      });
+    }
   });
 };
 
