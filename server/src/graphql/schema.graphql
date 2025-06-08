@@ -1,7 +1,7 @@
 scalar Date
 
 type Transaction {
-  id: ID!
+  id: String!
   amount: Float!
   type: String!
   category: String!
@@ -9,28 +9,30 @@ type Transaction {
   description: String
   isDuplicate: Boolean
   relatedGroupId: String
+  fromAccount: String
+  toAccount: String
+  smsBody: String
 }
 
 type Query {
   transactions: [Transaction!]!
 }
 
-type Mutation {
-  addTransaction(
-    id: ID,
-    amount: Float!
-    type: String!
-    category: String!
-    date: Date!
-    description: String
-  ): Transaction!
-
-  flagDuplicate(id: ID!, value: Boolean!): Transaction
-}
-
 type AuthPayload {
   accessToken: String!
   refreshToken: String!
+}
+
+input AddTransactionItem{
+    id: String
+    amount: Float!
+    type: String!
+    category: String!
+    date: String!
+    description: String
+    fromAccount: String
+    toAccount: String
+    smsBody: String
 }
 
 type Mutation {
@@ -39,12 +41,8 @@ type Mutation {
   refreshToken(token: String!): AuthPayload!
 
   addTransaction(
-    amount: Float!
-    type: String!
-    category: String!
-    date: String!
-    description: String
-  ): Transaction!
+    transactions: [AddTransactionItem!]!
+  ): [Transaction]!
 
   flagDuplicate(id: ID!, value: Boolean!): Transaction
 }

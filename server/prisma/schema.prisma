@@ -19,6 +19,9 @@ model Transaction {
   createdAt       DateTime @default(now())
   userId          String
   user            User     @relation(fields: [userId], references: [id])
+  fromAccount     String?
+  toAccount       String?
+  smsBody         String
 }
 
 model User {
