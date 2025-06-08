@@ -18,17 +18,7 @@ object ReactNativeFlipper {
         client.addPlugin(InspectorFlipperPlugin(context, DescriptorMapping.withDefaults()))
         client.addPlugin(SharedPreferencesFlipperPlugin(context))
         client.addPlugin(NetworkFlipperPlugin())
-//        client.addPlugin(
-//            DatabasesFlipperPlugin(
-//                RealmDatabaseDriver(
-//                    this,
-//                    object : RealmDatabaseProvider {
-//                        override fun getRealmConfigurations(): List<RealmConfiguration> {
-//                            return listOf(yourRealmConfiguration)
-//                    }
-//                })
-//            )
-//        )
+        client.addPlugin(DatabasesFlipperPlugin(context))
         client.start()
     }
 }
