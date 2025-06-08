@@ -1,29 +1,22 @@
 // screens/HomeScreen.js
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
 import { useAppInit } from 'src/App';
 import { useTheme } from 'src/ThemeContext';
 import realm from 'src/database'
 import RealmPlugin from 'realm-flipper-plugin-device'
-import { getTransactions } from 'src/api/transactions';
-import { ITransaction } from 'src/database/transactions';
+import { useCreateTransactionMutation, useGetTransactions } from 'src/api/transactions';
+import { ITransaction } from 'src/types/transaction';
+import { syncMessages } from 'src/services/sms/helper';
+import { useAppContext } from 'src/AppContext';
+import axios from 'axios';
 
 const HomeScreen = () => {
   useAppInit()
   const { theme } = useTheme();
-  const [transactions, setTransactions] = useState<ITransaction[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await getTransactions();
-        setTransactions(data);
-      } catch (e) {
-        console.error("Error fetching transactions:", e);
-      }
-    })()
-  }, []);
+  const { data: transactions } = useGetTransactions()
+  console.log("TXNs: ", transactions);
 
   const renderItem = ({ item }: { item: ITransaction }) => (
     <View
@@ -40,7 +33,7 @@ const HomeScreen = () => {
       </Text>
       <Text
         style={{
-          color: item.transactionType === 0 ? theme.red : theme.green,
+          color: item.type === 0 ? theme.red : theme.green,
           fontWeight: 'bold',
         }}
       >
@@ -55,10 +48,15 @@ const HomeScreen = () => {
     </View>
   );
 
+  const appContext = useAppContext();
+  const { mutate: addTransactionsToServer } = useCreateTransactionMutation();
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <RealmPlugin realms={[realm]} />
-      <Text style={[styles.header, { color: theme.text }]}>Home</Text>
+      <Text style={[styles.header, { color: theme.text }]}>Home
+        <Button title={'S'} onPress={() => { syncMessages(appContext, addTransactionsToServer) }}></Button>
+      </Text>
       <FlatList
         data={transactions}
         keyExtractor={(item) => item.id}

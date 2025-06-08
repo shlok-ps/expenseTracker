@@ -11,7 +11,8 @@ import { PieChart, BarChart } from 'react-native-chart-kit';
 import { useTheme } from 'src/ThemeContext';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { getTransactions, ITransaction } from 'src/database/transactions';
+import { getTransactions } from 'src/database/transactions';
+import { ITransaction } from 'src/types/transaction';
 
 const screenWidth = Dimensions.get('window').width;
 

@@ -2,7 +2,9 @@ import { Platform, PermissionsAndroid } from 'react-native';
 import SmsAndroid from 'react-native-get-sms-android';
 import { analyzeSMS } from '../ai';
 import { IAppContext } from 'src/AppContext';
-import { addTransaction } from '../transactions';
+import { ITransaction } from 'src/types/transaction';
+import { TransactionType } from 'src/types/transaction';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export const requestSMSPermission = async () => {
@@ -22,7 +24,7 @@ export const requestSMSPermission = async () => {
   return false;
 };
 
-export const parseSMS = (msg: any) => {
+export const parseSMSRegEx = (msg: any) => {
   const match = msg.body.match(/(?:INR|Rs\.?)\s?([\d,]+\.?\d{0,2})/i);
   if (!match) return null;
   const amount = parseFloat(match[1].replace(/,/g, ''));
@@ -36,58 +38,96 @@ export const parseSMS = (msg: any) => {
   };
 }
 
-export const parseSMSAI = async (appContext: IAppContext, msg: any) => {
+export const parseSMSAI = async (appContext: IAppContext, msg: IMessage): Promise<ITransaction> => {
   const aiResponse = await analyzeSMS(appContext, msg.body)
+  console.log('aiResponse: ', aiResponse);
   const data = JSON.parse(aiResponse);
   return {
-    id: msg._id,
-    body: msg.body,
+    id: msg._id.toString(),
+    description: "",
     amount: data.amount,
     type: data.type,
     date: data.date ? new Date(data.date) : new Date(Number(msg.date)),
+    category: data.category,
+    smsBody: msg.body,
+    fromAccount: data.fromAccount || "",
+    toAccount: data.toAccount || "",
   }
 }
 
-export async function getTransactionsFromSMS(appContext: IAppContext): Promise<any[]> {
+interface IMessage {
+  _id: string;
+  body: string;
+  date: number;
+}
+
+const MAX_SMS_COUNT = 5; // Maximum number of SMS to fetch in one go
+
+const getSMSList = (minDate: number, startIndex: number): Promise<IMessage[]> => {
   return new Promise((resolve, reject) => {
     SmsAndroid.list(
       JSON.stringify({
         box: 'inbox',
-        maxCount: 10,
-        minDate: 1749081600000
+        minDate: minDate,
+        indexFrom: startIndex,
+        maxCount: MAX_SMS_COUNT
       }),
       (fail: string) => reject(fail),
-      async (count: number, smsList: string) => {
-        const messages = JSON.parse(smsList);
-        const expenses = [];
-        for (let message of messages) {
-          expenses.push(await parseSMSAI(appContext, message));
-        }
-        resolve(expenses);
+      async (_: number, smsList: string) => {
+        const messages = JSON.parse(smsList) as IMessage[];
+        resolve(messages);
       }
     );
   });
 }
 
-export const onSMSRecieved = async (msg: string) => {
-  console.log("SMS Received: ", msg);
-  const expense = await parseSMSAI(appContext, JSON.parse(msg))
-  if (expense?.type && [].incldues(expense.type)) {
-
-
-  }
-
+const getLastSyncedDateTime = async () => {
+  return Number(await AsyncStorage.getItem('lastSyncDate'))
 }
 
-export const syncMessages = async (appContext: IAppContext) => {
-  console.log("Syncing messages from SMS...");
+const saveLastSyncedDateTime = async (date: number) => {
+  await AsyncStorage.setItem('lastSyncDate', date.toString())
+}
+
+export const onSMSRecieved = async (appContext: IAppContext, msg: string, addTransactionsToServer: Function) => {
+  console.log("SMS Received: ", msg);
+  const expense = await parseSMSAI(appContext, JSON.parse(msg))
+  if (expense?.type && [TransactionType.DEBIT, TransactionType.CREDIT].includes(expense.type)) {
+    const res = await addTransactionsToServer([expense]);
+    console.log("Saved SMS to Server", res.id)
+  }
+}
+
+export const syncMessages = async (appContext: IAppContext, addTransactionsToServer: Function) => {
   const granted = await requestSMSPermission();
   if (granted) {
-    const transanctions = await getTransactionsFromSMS(appContext);
-    await addTransaction(transanctions);
+    let initialDate = await getLastSyncedDateTime(), startIndex = 0;
+    console.log("Syncing messages from SMS...from time: ", new Date(initialDate).toLocaleString());
+    while (true) {
+      const smsList = await getSMSList(initialDate, startIndex)
+      if (!smsList.length) {
+        console.log("No more messages to sync.");
+        saveLastSyncedDateTime(new Date().getTime())
+        break;
+      }
+      const transanctions = [];
+      for (let message of smsList) {
+        const aiRes = await parseSMSAI(appContext, message)
+        aiRes.amount && transanctions.push(aiRes);
+      }
+      try {
+        await addTransactionsToServer(transanctions);
+      }
+      catch (e) {
+        console.error("Error while adding transactions to server: ", e);
+        throw new Error("Error while adding transactions to server: " + e);
+      }
+      startIndex += MAX_SMS_COUNT;
+      saveLastSyncedDateTime(smsList[smsList.length - 1].date)
+    }
     console.log("Synced Messages.")
   } else {
-    console.warn("SMS permission not granted");
+    console.error("SMS permission not granted");
   }
 }
 

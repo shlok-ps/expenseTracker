@@ -24,7 +24,7 @@ export const useAuth = () => {
       setAuthChecked(true)
     })
   }, [])
-  console.log("Auth checked:", authChecked, "Authenticated:", authenticated)
+
   return { authChecked, authenticated }
 }
 

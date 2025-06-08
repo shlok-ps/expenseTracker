@@ -1,26 +1,33 @@
-import { ITransaction } from 'src/database/transactions'
+import { ITransaction } from 'src/types/transaction';
 import api from './axiosClient'
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-export const createTransaction = async (data: ITransaction[]) => {
+const createTransaction = async (data: ITransaction[]) => {
   const res = await api.post('', {
     query: `
-      mutation CreateTransaction($data: CreateTransactionInput!) {
-        createTransaction(data: $data) {
+      mutation CreateTransaction($data: [AddTransactionItem!]!) {
+        addTransaction(transactions: $data) {
           id
-          amount
-          type
-          category
-          date
-          description
         }
       }
     `,
     variables: { data }
   })
-  return res.data.data.createTransaction
+  return res.data.data.addTransaction
 }
 
-export const getTransactions = async () => {
+export const useCreateTransactionMutation = () => {
+  const qc = useQueryClient();
+  return useMutation((data: ITransaction[]) => createTransaction(data), {
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ['TRANSACTIONS']
+      })
+    }
+  })
+}
+
+const getTransactions = async () => {
   const res = await api.post('', {
     query: `
       query {
@@ -36,7 +43,12 @@ export const getTransactions = async () => {
       }
     `
   })
-  return res.data.data.transactions as ITransaction[]
+  console.log("Transactions: ", res.data);
+  return res.data.data?.transactions as ITransaction[]
+}
+
+export const useGetTransactions = () => {
+  return useQuery(['TRANSACTIONS'], () => getTransactions())
 }
 
 export const updateTransaction = async (id: string, data: any) => {
@@ -57,6 +69,17 @@ export const updateTransaction = async (id: string, data: any) => {
   return res.data.data.updateTransaction
 }
 
+export const useUpdateTransactionMutation = () => {
+  const qc = useQueryClient();
+  return useMutation((data: any) => updateTransaction(data.id, data.data), {
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ['TRANSACTIONS']
+      })
+    }
+  })
+}
+
 export const deleteTransaction = async (id: string) => {
   const res = await api.post('', {
     query: `
@@ -69,3 +92,13 @@ export const deleteTransaction = async (id: string) => {
   return res.data.data.deleteTransaction
 }
 
+export const useDeleteTransactionMutation = () => {
+  const qc = useQueryClient();
+  return useMutation((id: string) => deleteTransaction(id), {
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ['TRANSACTIONS']
+      })
+    }
+  })
+}

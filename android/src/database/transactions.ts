@@ -1,22 +1,8 @@
 // database/transactions.js
 
+import { ITransaction } from 'src/types/transaction';
 import realm from './index';
 import { v4 as uuidv4 } from 'uuid';
-
-export enum TransactionType {
-  CREDIT,
-  DEBIT
-}
-export interface ITransaction {
-  id: string;
-  date: Date;
-  description: string;
-  category: string;
-  amount: number;
-  transactionType: TransactionType;
-  isDuplicate: boolean;
-  relatedIds: string[];
-}
 
 export const addTransaction = (txs: ITransaction[]) => {
   realm.write(() => {
@@ -27,7 +13,7 @@ export const addTransaction = (txs: ITransaction[]) => {
         description: tx.description,
         category: tx.category,
         amount: tx.amount,
-        transactionType: tx.transactionType,
+        transactionType: tx.type,
         isDuplicate: tx.isDuplicate || false,
         relatedIds: tx.relatedIds || [],
       });

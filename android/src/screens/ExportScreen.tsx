@@ -13,7 +13,8 @@ import Share from 'react-native-share';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { getTransactions, ITransaction } from 'src/database/transactions';
+import { getTransactions } from 'src/database/transactions';
+import { ITransaction } from 'src/types/transaction';
 
 const ExportScreen = () => {
   const { theme } = useTheme();
@@ -61,7 +62,7 @@ const ExportScreen = () => {
     const rows = filtered
       .map(
         (tx) =>
-          `${tx.date},"${tx.description}",${tx.category},${tx.amount},${tx.transactionType === 1 ? 'Credit' : 'Debit'
+          `${tx.date},"${tx.description}",${tx.category},${tx.amount},${tx.type === 1 ? 'Credit' : 'Debit'
           }`
       )
       .join('\n');
@@ -87,7 +88,7 @@ const ExportScreen = () => {
             <td>${tx.description}</td>
             <td>${tx.category}</td>
             <td>₹${tx.amount}</td>
-            <td>${tx.transactionType === 1 ? 'Credit' : 'Debit'}</td>
+            <td>${tx.type === 1 ? 'Credit' : 'Debit'}</td>
           </tr>
         `
         )

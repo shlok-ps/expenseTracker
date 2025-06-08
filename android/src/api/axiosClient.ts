@@ -1,8 +1,11 @@
 import axios from 'axios'
 import { getAccessToken, getRefreshToken, storeTokens, clearTokens } from '../utils/auth'
 
+const baseURL = 'http://192.168.29.144:4000/graphql'
+//const baseURL = 'http://10.0.2.2:4000/graphql'
+
 const api = axios.create({
-  baseURL: 'http://192.168.29.144:4000/graphql',
+  baseURL: baseURL,
   headers: { 'Content-Type': 'application/json' },
 })
 
@@ -12,16 +15,13 @@ api.interceptors.request.use(async config => {
   return config
 })
 
-api.interceptors.response.use(
-  res => res,
-  async err => {
-    const original = err.config
-    if (err.response?.status === 401 && !original._retry) {
-      original._retry = true
-      try {
-        const refreshToken = await getRefreshToken()
-        const resp = await axios.post('http://192.168.29.144:4000/graphql', {
-          query: `
+const refreshToken = async (obj: any) => {
+  const original = obj.config
+  try {
+    const refreshToken = await getRefreshToken()
+    console.log('Refreshing token', refreshToken)
+    const resp = await axios.post(baseURL, {
+      query: `
             mutation Refresh($token: String!) {
               refreshToken(token: $token) {
                 accessToken
@@ -29,17 +29,37 @@ api.interceptors.response.use(
               }
             }
           `,
-          variables: { token: refreshToken }
-        })
+      variables: { token: refreshToken }
+    })
 
-        const { accessToken, refreshToken: newRefresh } = resp.data.data.refreshToken
-        await storeTokens(accessToken, newRefresh)
-        original.headers.Authorization = `Bearer ${accessToken}`
-        return api(original)
-      } catch {
-        await clearTokens()
-        // optionally: navigate to login
-      }
+    const { accessToken, refreshToken: newRefresh } = resp.data.data.refreshToken
+    await storeTokens(accessToken, newRefresh)
+    original.headers.Authorization = `Bearer ${accessToken}`
+    return api(original)
+  } catch {
+    await clearTokens()
+    // optionally: navigate to login
+  }
+}
+
+api.interceptors.response.use(
+  res => {
+    const original = res.config
+    if (res.data.errors?.[0]?.extensions.code == 'UNAUTHENTICATED' && !original._retry) {
+      original._retry = true
+      refreshToken(res)
+    }
+    if (res.data.errors?.length > 0) {
+      console.error('GraphQL Error:', res.data.errors);
+      throw new Error(res.data.errors[0].message)
+    }
+    return res
+  },
+  async err => {
+    const original = err.config
+    if (err.response?.status === 401 && !original._retry) {
+      original._retry = true
+      refreshToken(err)
     }
     return Promise.reject(err)
   }
