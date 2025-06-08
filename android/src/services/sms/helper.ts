@@ -1,6 +1,8 @@
 import { Platform, PermissionsAndroid } from 'react-native';
 import SmsAndroid from 'react-native-get-sms-android';
-import { addTransaction } from 'src/database/transactions';
+import { analyzeSMS } from '../ai';
+import { IAppContext } from 'src/AppContext';
+import { addTransaction } from '../transactions';
 
 
 export const requestSMSPermission = async () => {
@@ -34,33 +36,58 @@ export const parseSMS = (msg: any) => {
   };
 }
 
-export async function getTransactionsFromSMS(): Promise<any[]> {
+export const parseSMSAI = async (appContext: IAppContext, msg: any) => {
+  const aiResponse = await analyzeSMS(appContext, msg.body)
+  const data = JSON.parse(aiResponse);
+  return {
+    id: msg._id,
+    body: msg.body,
+    amount: data.amount,
+    type: data.type,
+    date: data.date ? new Date(data.date) : new Date(Number(msg.date)),
+  }
+}
+
+export async function getTransactionsFromSMS(appContext: IAppContext): Promise<any[]> {
   return new Promise((resolve, reject) => {
     SmsAndroid.list(
       JSON.stringify({
         box: 'inbox',
-        count: 100
+        maxCount: 10,
+        minDate: 1749081600000
       }),
-      (fail) => reject(fail),
-      (count, smsList) => {
+      (fail: string) => reject(fail),
+      async (count: number, smsList: string) => {
         const messages = JSON.parse(smsList);
-        const expenses = messages.map(parseSMS).filter(Boolean);
+        const expenses = [];
+        for (let message of messages) {
+          expenses.push(await parseSMSAI(appContext, message));
+        }
         resolve(expenses);
       }
     );
   });
 }
 
-export const onSMSRecieved = (msg: string) => {
-  console.log(msg);
+export const onSMSRecieved = async (msg: string) => {
+  console.log("SMS Received: ", msg);
+  const expense = await parseSMSAI(appContext, JSON.parse(msg))
+  if (expense?.type && [].incldues(expense.type)) {
+
+
+  }
+
 }
 
-export const syncMessages = async () => {
+export const syncMessages = async (appContext: IAppContext) => {
+  console.log("Syncing messages from SMS...");
   const granted = await requestSMSPermission();
   if (granted) {
-    const transanctions = await getTransactionsFromSMS();
-    console.log("Transactions From SMS: ", transanctions);
-    addTransaction(transactions)
+    const transanctions = await getTransactionsFromSMS(appContext);
+    await addTransaction(transanctions);
+    console.log("Synced Messages.")
+  } else {
+    console.warn("SMS permission not granted");
   }
 }
 

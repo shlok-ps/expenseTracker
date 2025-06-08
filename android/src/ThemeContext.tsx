@@ -22,7 +22,6 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const setThemeVariant = (newVariant: string) => {
-    console.log("newVariant: ", newVariant)
     setVariant(newVariant);
     setThemeObj(catppuccin[newVariant]);
     setThemeToDB(newVariant); // save to Realm

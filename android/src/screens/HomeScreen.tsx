@@ -15,10 +15,8 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const data = getTransactions();
-    console.log('data: ', data)
     setTransactions([...data]); // Realm collections need to be spread into array
   }, []);
-  console.log("realm: ", realm)
 
   const renderItem = ({ item }: { item: ITransaction }) => (
     <View
