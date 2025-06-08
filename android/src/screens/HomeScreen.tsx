@@ -4,18 +4,25 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { useAppInit } from 'src/App';
 import { useTheme } from 'src/ThemeContext';
-import { getTransactions, ITransaction } from 'src/database/transactions';
 import realm from 'src/database'
 import RealmPlugin from 'realm-flipper-plugin-device'
+import { getTransactions } from 'src/api/transactions';
+import { ITransaction } from 'src/database/transactions';
 
 const HomeScreen = () => {
   useAppInit()
   const { theme } = useTheme();
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
 
   useEffect(() => {
-    const data = getTransactions();
-    setTransactions([...data]); // Realm collections need to be spread into array
+    (async () => {
+      try {
+        const data = await getTransactions();
+        setTransactions(data);
+      } catch (e) {
+        console.error("Error fetching transactions:", e);
+      }
+    })()
   }, []);
 
   const renderItem = ({ item }: { item: ITransaction }) => (
