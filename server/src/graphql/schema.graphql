@@ -12,10 +12,12 @@ type Transaction {
   fromAccount: String
   toAccount: String
   smsBody: String
+  source: String
+  sourceDescription: String
 }
 
 type Query {
-  transactions: [Transaction!]!
+  transactions(id: String): [Transaction!]!
 }
 
 type AuthPayload {
@@ -28,11 +30,13 @@ input AddTransactionItem{
     amount: Float!
     type: String!
     category: String!
-    date: String!
+    date: Date!
     description: String
     fromAccount: String
     toAccount: String
     smsBody: String
+    source: String
+    sourceDescription: String
 }
 
 type Mutation {

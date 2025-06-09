@@ -5,7 +5,7 @@ export enum TransactionType {
 
 export interface ITransaction {
   id: string;
-  date: Date;
+  date: number;
   description: string;
   category: string;
   amount: number;
@@ -15,4 +15,6 @@ export interface ITransaction {
   smsBody: string;
   fromAccount?: string;
   toAccount?: string;
+  source?: string;
+  sourceDescription?: string;
 }

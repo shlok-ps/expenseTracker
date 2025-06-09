@@ -2,14 +2,15 @@ import { AuthenticationError } from "apollo-server"
 
 export const transactionResolvers = {
   Query: {
-    transactions: (_: any, __: any, { prisma, userId }: any) => {
+    transactions: (_: any, args: any, { prisma, userId }: any) => {
       if (!userId) throw new AuthenticationError("Not Authenticated 2");
-      return prisma.transaction.findMany({ where: { userId } })
+      return prisma.transaction.findMany({ where: { userId, id: args?.id ?? undefined } })
     },
   },
   Mutation: {
     addTransaction: async (_: any, args: any, { prisma, userId }: any) => {
       if (!userId) throw new AuthenticationError("Not Authenticated");
+      console.log("args: ", args.transactions[0])
 
       const userDetails = await prisma.user.update({
         where: {
@@ -27,7 +28,6 @@ export const transactionResolvers = {
           transactions: true
         },
       })
-      console.log("Added transactions: ", userDetails.transactions)
       return userDetails.transactions
     },
     flagDuplicate: (_: any, { id, value }: any, { prisma, userId }: any) => {

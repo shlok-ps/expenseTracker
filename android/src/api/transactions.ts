@@ -27,9 +27,24 @@ export const useCreateTransactionMutation = () => {
   })
 }
 
-const getTransactions = async () => {
+const getTransactions = async (id?: string) => {
   const res = await api.post('', {
-    query: `
+    query: id ? `
+      query getTransactions($id: String) {
+        transactions(id: $id) {
+          id
+          amount
+          type
+          category
+          date
+          description
+          isDuplicate
+          fromAccount
+          toAccount
+          smsBody
+        }
+      }
+    `: `
       query {
         transactions {
           id
@@ -38,17 +53,18 @@ const getTransactions = async () => {
           category
           date
           description
-          isDuplicate
+          fromAccount
+          toAccount
         }
       }
-    `
+    `,
+    variables: { id }
   })
-  console.log("Transactions: ", res.data);
   return res.data.data?.transactions as ITransaction[]
 }
 
-export const useGetTransactions = () => {
-  return useQuery(['TRANSACTIONS'], () => getTransactions())
+export const useGetTransactions = (id?: string) => {
+  return useQuery(['TRANSACTIONS', id], () => getTransactions(id))
 }
 
 export const updateTransaction = async (id: string, data: any) => {

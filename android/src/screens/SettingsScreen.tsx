@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from 'src/ThemeContext';
+import { useTheme } from 'src/context/ThemeContext';
+import SmsSyncPanel from 'src/components/SyncPanel';
 
 const SettingsScreen = () => {
   const { theme, variant, setThemeVariant } = useTheme();
@@ -60,6 +61,7 @@ const SettingsScreen = () => {
       >
         Live Preview using {selectedTheme} theme 🌈
       </Text>
+      <SmsSyncPanel />
     </View>
   );
 };

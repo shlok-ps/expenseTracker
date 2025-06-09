@@ -8,7 +8,7 @@ import {
   Button,
 } from 'react-native';
 import { PieChart, BarChart } from 'react-native-chart-kit';
-import { useTheme } from 'src/ThemeContext';
+import { useTheme } from 'src/context/ThemeContext';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getTransactions } from 'src/database/transactions';

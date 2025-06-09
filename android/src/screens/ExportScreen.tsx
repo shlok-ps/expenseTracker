@@ -7,7 +7,7 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useTheme } from 'src/ThemeContext';
+import { useTheme } from 'src/context/ThemeContext';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';

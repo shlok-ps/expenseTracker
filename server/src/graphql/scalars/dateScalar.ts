@@ -11,6 +11,7 @@ const dateScalar = new GraphQLScalarType({
   },
   parseValue(value) {
     if (typeof value === 'number') {
+      console.log("Date: ", value, new Date(value))
       return new Date(value); // Convert incoming integer to Date
     }
     throw new Error('GraphQL Date Scalar parser expected a `number`');

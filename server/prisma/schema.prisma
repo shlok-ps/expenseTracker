@@ -22,6 +22,8 @@ model Transaction {
   fromAccount     String?
   toAccount       String?
   smsBody         String
+  source          String? // "sms" or "manual"
+  sourceDescription String?
 }
 
 model User {

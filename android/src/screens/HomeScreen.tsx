@@ -1,61 +1,57 @@
-// screens/HomeScreen.js
-
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
+import { router } from 'expo-router';
+import React from 'react';
+import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import RealmPlugin from 'realm-flipper-plugin-device';
+import { useGetTransactions } from 'src/api/transactions';
 import { useAppInit } from 'src/App';
-import { useTheme } from 'src/ThemeContext';
-import realm from 'src/database'
-import RealmPlugin from 'realm-flipper-plugin-device'
-import { useCreateTransactionMutation, useGetTransactions } from 'src/api/transactions';
+import { useSync } from 'src/context/SyncContext';
+import { useTheme } from 'src/context/ThemeContext';
+import realm from 'src/database';
 import { ITransaction } from 'src/types/transaction';
-import { syncMessages } from 'src/services/sms/helper';
-import { useAppContext } from 'src/AppContext';
-import axios from 'axios';
 
 const HomeScreen = () => {
   useAppInit()
   const { theme } = useTheme();
   const { data: transactions } = useGetTransactions()
-  console.log("TXNs: ", transactions);
+  const { startSync } = useSync();
 
   const renderItem = ({ item }: { item: ITransaction }) => (
-    <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: theme.surface,
-          borderColor: item.isDuplicate ? theme.red : theme.primary,
-        },
-      ]}
-    >
-      <Text style={[styles.description, { color: theme.text }]}>
-        {item.description}
-      </Text>
-      <Text
-        style={{
-          color: item.type === 0 ? theme.red : theme.green,
-          fontWeight: 'bold',
-        }}
+    <TouchableOpacity onPress={() => { router.push("/transactions/" + item.id) }}>
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: theme.surface,
+            borderColor: item.isDuplicate ? theme.red : theme.primary,
+          },
+        ]}
       >
-        ₹ {item.amount.toFixed(2)}
-      </Text>
-      <Text style={{ color: theme.subtle }}>
-        {new Date(item.date).toDateString()} • {item.category}
-      </Text>
-      {item.isDuplicate && (
-        <Text style={{ color: theme.red, fontSize: 12 }}>⚠ Duplicate</Text>
-      )}
-    </View>
+        <Text style={[styles.description, { color: theme.text }]}>
+          {item.description}
+        </Text>
+        <Text
+          style={{
+            color: item.type === 0 ? theme.red : theme.green,
+            fontWeight: 'bold',
+          }}
+        >
+          ₹ {item.amount.toFixed(2)}
+        </Text>
+        <Text style={{ color: theme.subtle }}>
+          {new Date(item.date).toDateString()} • {item.category}
+        </Text>
+        {item.isDuplicate && (
+          <Text style={{ color: theme.red, fontSize: 12 }}>⚠ Duplicate</Text>
+        )}
+      </View>
+    </TouchableOpacity>
   );
-
-  const appContext = useAppContext();
-  const { mutate: addTransactionsToServer } = useCreateTransactionMutation();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <RealmPlugin realms={[realm]} />
       <Text style={[styles.header, { color: theme.text }]}>Home
-        <Button title={'S'} onPress={() => { syncMessages(appContext, addTransactionsToServer) }}></Button>
+        <Button title={'S'} onPress={startSync}></Button>
       </Text>
       <FlatList
         data={transactions}
