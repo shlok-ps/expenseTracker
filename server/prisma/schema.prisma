@@ -12,7 +12,8 @@ model Transaction {
   amount          Float
   type            String   // "credit" or "debit"
   category        String
-  date            DateTime
+  date            DateTime?
+  sourceDateTime  DateTime
   description     String?
   isDuplicate     Boolean  @default(false)
   relatedGroupId  String?

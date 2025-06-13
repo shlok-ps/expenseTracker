@@ -15,7 +15,7 @@ export default function SmsSyncPanel() {
         <>
           <Text style={{ color: theme.text }}>Progress: {progress}%</Text>
           <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginTop: 10 }}>
-            <Bar progress={progress / 100} width={0.3} color={theme.primary} />
+            <Bar progress={progress} width={0.3} color={theme.primary} />
             <Button title="Stop Sync" color={theme.red} onPress={stopSync} />
           </View>
         </>

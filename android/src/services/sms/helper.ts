@@ -47,7 +47,8 @@ export const parseSMSAI = async (appContext: IAppContext, msg: IMessage): Promis
     description: "",
     amount: data.amount,
     type: data.type,
-    date: data.date ? data.date : Number(msg.date),
+    date: (new Date(data.date)).getTime(),
+    sourceDateTime: Number(msg.date),
     category: data.category,
     smsBody: msg.body,
     fromAccount: data.fromAccount || "",
@@ -71,6 +72,7 @@ const getSMSList = (minDate: number, startIndex: number): Promise<IMessage[]> =>
       JSON.stringify({
         box: 'inbox',
         minDate: minDate,
+        maxCount: 100,
       }),
       (fail: string) => reject(fail),
       async (_: number, smsList: string) => {

@@ -5,7 +5,8 @@ type Transaction {
   amount: Float!
   type: String!
   category: String!
-  date: Date!
+  date: Date
+  sourceDateTime: Date!
   description: String
   isDuplicate: Boolean
   relatedGroupId: String
@@ -30,7 +31,8 @@ input AddTransactionItem{
     amount: Float!
     type: String!
     category: String!
-    date: Date!
+    date: Date
+    sourceDateTime: Date!
     description: String
     fromAccount: String
     toAccount: String

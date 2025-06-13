@@ -23,7 +23,7 @@ export const useCreateTransactionMutation = () => {
       qc.invalidateQueries({
         queryKey: ['TRANSACTIONS']
       })
-    }
+    },
   })
 }
 

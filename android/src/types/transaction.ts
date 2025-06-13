@@ -5,7 +5,8 @@ export enum TransactionType {
 
 export interface ITransaction {
   id: string;
-  date: number;
+  date?: number;
+  sourceDateTime: number;
   description: string;
   category: string;
   amount: number;

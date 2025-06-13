@@ -4,6 +4,7 @@ import { AppProvider } from 'src/context/AppContext';
 import { SyncProvider } from 'src/context/SyncContext';
 import { ThemeProvider } from 'src/context/ThemeContext';
 import { useAuth } from 'src/utils/auth';
+import Toast from 'react-native-toast-message';
 
 const queryClient = new QueryClient()
 
@@ -23,6 +24,7 @@ export default function RootLayout() {
           </SyncProvider>
         </AppProvider>
       </ThemeProvider>
+      <Toast />
     </QueryClientProvider>
   );
 }

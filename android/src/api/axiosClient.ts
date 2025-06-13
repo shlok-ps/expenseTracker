@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getAccessToken, getRefreshToken, storeTokens, clearTokens } from '../utils/auth'
+import { router } from 'expo-router'; // Adjust the import based on your router setup
 
 const baseURL = 'http://192.168.29.144:4000/graphql'
 //const baseURL = 'http://10.0.2.2:4000/graphql'
@@ -38,6 +39,7 @@ const refreshToken = async (obj: any) => {
     return api(original)
   } catch {
     await clearTokens()
+    router.push('/login') // Assuming you have a router instance to navigate
     // optionally: navigate to login
   }
 }
