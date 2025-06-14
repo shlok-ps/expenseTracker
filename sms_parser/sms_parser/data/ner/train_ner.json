@@ -1,0 +1,46 @@
+[
+  {
+    "tokens": [
+      "INR",
+      "500",
+      "debited",
+      "from",
+      "A/c",
+      "1234",
+      "on",
+      "2025-06-11"
+    ],
+    "ner_tags": [
+      "B-AMOUNT",
+      "I-AMOUNT",
+      "O",
+      "O",
+      "B-ACCOUNT",
+      "I-ACCOUNT",
+      "O",
+      "B-DATE"
+    ]
+  },
+  {
+    "tokens": [
+      "INR",
+      "7000",
+      "credited",
+      "to",
+      "A/c",
+      "1234",
+      "on",
+      "2025-06-11"
+    ],
+    "ner_tags": [
+      "B-AMOUNT",
+      "I-AMOUNT",
+      "O",
+      "O",
+      "B-ACCOUNT",
+      "I-ACCOUNT",
+      "O",
+      "B-DATE"
+    ]
+  }
+]

@@ -223,3 +223,20 @@ fix_*.patch
 # [Experimental] Generated TS type definitions
 /packages/**/types_generated/
 .env
+tmp
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+__pypackages__/
+
+**/.venv
+**/*.egg-info/
+**/*.eggs/
+**/*.egg
+
+sms_parser/sms_parser/models
+**/logs

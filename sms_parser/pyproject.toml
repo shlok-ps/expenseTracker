@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sms-parser"
+version = "0.1.0"
+description = "NLP model for parsing transaction SMSes"
+authors = [
+  { name="Your Name", email="your.email@example.com" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.8"
+
+dependencies = [
+  "transformers===4.52.3",
+  "datasets===3.6.0",
+  "accelerate===1.7.0",
+  "onnxruntime",
+  "torch===2.7.1",
+  "scikit-learn",
+  "pandas",
+  "faker",
+  "tensorboard",
+]
+
+[project.scripts]
+sms-parser = "sms_parser.cli:main"
+
