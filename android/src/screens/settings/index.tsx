@@ -4,14 +4,12 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from 'src/context/ThemeContext';
 import SmsSyncPanel from 'src/components/SyncPanel';
-import { useAppContext } from 'src/context/AppContext';
+import { AIDetails, useAppContext } from 'src/context/AppContext';
 import { AIOptions } from './constants';
 
 const SettingsScreen = () => {
   const { theme, variant, setThemeVariant } = useTheme();
-  const [selectedAIBaseURL, setSelectedAIBaseURL] = useState<string>('https://api.example.com/ai');
-  const { setState: setAppState } = useAppContext()
-
+  const { state: { setAIDetails, aiDetails } } = useAppContext()
   const [themeOpen, setThemeOpen] = useState(false);
   const [aiOpen, setAIOpen] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState(variant);
@@ -60,16 +58,13 @@ const SettingsScreen = () => {
 
       <DropDownPicker
         open={aiOpen}
-        value={selectedAIBaseURL}
+        value={aiDetails.value}
         items={AIOptions}
         setOpen={setAIOpen}
         setValue={(getValue) => {
-          const value = getValue();
-          setSelectedAIBaseURL(value);
+          const value = getValue("");
           const option = AIOptions.find(ai => ai.value === value)
-          const newAppState = { AI_BASE_URL: option?.baseURL || '', model: option?.model || '', value: option?.value || '' }
-          console.log('newAppState: ', newAppState);
-          setAppState(newAppState);
+          setAIDetails(option as AIDetails);
         }}
         placeholder="Select AI"
         style={{

@@ -4,12 +4,12 @@ import { login } from '../api/auth'
 import { router } from 'expo-router'
 
 export default function LoginScreen({ }: any) {
-  const [email, setEmail] = useState('link2psp@gmail.com')
-  const [password, setPassword] = useState('Qwerty@123')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleLogin = async () => {
     try {
-      await login('link2psp@gmail.com', 'Qwerty@123')
+      await login(email, password)
       router.push('/(tabs)')
     } catch (err) {
       Alert.alert('Login failed', (err as any).message || 'Unknown error')

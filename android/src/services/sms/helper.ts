@@ -1,7 +1,7 @@
 import { Platform, PermissionsAndroid, Alert } from 'react-native';
 import SmsAndroid from 'react-native-get-sms-android';
 import { analyzeSMS } from '../ai';
-import { IAppContext } from 'src/context/AppContext';
+import { AIDetails, IAppContext } from 'src/context/AppContext';
 import { ITransaction } from 'src/types/transaction';
 import { TransactionType } from 'src/types/transaction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -38,7 +38,7 @@ export const parseSMSRegEx = (msg: any) => {
   };
 }
 
-export const parseSMSAI = async (appContext: IAppContext, msg: IMessage): Promise<ITransaction> => {
+export const parseSMSAI = async (appContext: AIDetails, msg: IMessage): Promise<ITransaction> => {
   const aiResponse = await analyzeSMS(appContext, msg.body)
   console.log('aiResponse: ', aiResponse);
   const data = JSON.parse(aiResponse);
@@ -72,7 +72,6 @@ const getSMSList = (minDate: number, startIndex: number): Promise<IMessage[]> =>
       JSON.stringify({
         box: 'inbox',
         minDate: minDate,
-        maxCount: 100,
       }),
       (fail: string) => reject(fail),
       async (_: number, smsList: string) => {
@@ -84,15 +83,15 @@ const getSMSList = (minDate: number, startIndex: number): Promise<IMessage[]> =>
   });
 }
 
-const getLastSyncedDateTime = async () => {
+export const getLastSyncedDateTime = async () => {
   return Number(await AsyncStorage.getItem('lastSyncDate'))
 }
 
-const saveLastSyncedDateTime = async (date: number) => {
+export const saveLastSyncedDateTime = async (date: number) => {
   await AsyncStorage.setItem('lastSyncDate', date.toString())
 }
 
-export const onSMSRecieved = async (appContext: IAppContext, msg: string, addTransactionsToServer: Function) => {
+export const onSMSRecieved = async (appContext: AIDetails, msg: string, addTransactionsToServer: Function) => {
   console.log("SMS Received: ", msg);
   const expense = await parseSMSAI(appContext, JSON.parse(msg))
   if (expense?.type && [TransactionType.DEBIT, TransactionType.CREDIT].includes(expense.type)) {
@@ -113,7 +112,7 @@ export const getSMSListFromLastSyncedDate = async (): Promise<IMessage[]> => {
   }
 }
 
-export const analyseAndSaveSMSToServer = async (appContext: IAppContext, addTransactionsToServer: Function, smsList: IMessage[]) => {
+export const analyseAndSaveSMSToServer = async (appContext: AIDetails, addTransactionsToServer: Function, smsList: IMessage[]) => {
   const transanctions = [];
   for (let message of smsList) {
     const aiRes = await parseSMSAI(appContext, message)

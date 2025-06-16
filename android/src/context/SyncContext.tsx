@@ -29,39 +29,39 @@ export const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   const appContext = useAppContext();
   const { mutateAsync: addTransactionsToServer } = useCreateTransactionMutation();
 
-  const startSync = async () => {
-    try {
-      setIsSyncing(true);
-      setProgress(0);
-      const allSMSList = await getSMSListFromLastSyncedDate()
-      console.log('allSMSList: ', allSMSList.length);
-      stopFlagRef.current = false;
+  const syncIthBatch = async (allSMSList: IMessage[], i: number) => {
+    const smsList = allSMSList.slice(i * MAX_SMS_COUNT, i * MAX_SMS_COUNT + MAX_SMS_COUNT)
+    await analyseAndSaveSMSToServer(appContext.state.aiDetails, addTransactionsToServer, smsList);
+  }
 
-      const totalProgressCount = allSMSList.length / MAX_SMS_COUNT;
-      for (let i = 0; i < totalProgressCount; i++) {
+  const startSync = async () => {
+    setIsSyncing(true);
+    setProgress(0);
+    let i = 0;
+    const allSMSList = await getSMSListFromLastSyncedDate()
+    stopFlagRef.current = false;
+    const totalProgressCount = allSMSList.length / MAX_SMS_COUNT;
+    // const totalProgressCount = 100;
+    const processStep = async () => {
+      if (i < totalProgressCount) {
+        if (stopFlagRef.current) {
+          setIsSyncing(false);
+          return;
+        }
         const percentage = Math.round(((i + 1) / totalProgressCount) * 100);
-        console.log('syncing', i, 'of', totalProgressCount, ' --- percentage: ', percentage);
-        if (stopFlagRef.current) break;
-        await (async () => {
-          const smsList = allSMSList.slice(i * MAX_SMS_COUNT, i * MAX_SMS_COUNT + MAX_SMS_COUNT)
-          await analyseAndSaveSMSToServer(appContext.state, addTransactionsToServer, smsList);
-          setProgress(percentage);
-        })()
+        await syncIthBatch(allSMSList, i)
+        setProgress(percentage);
+        i++;
+        setTimeout(processStep, 10); // Adjust time for smoother/slower updates
+      } else {
+        setIsSyncing(false);
       }
-    } catch (e) {
-      console.error('Error In Sync:', e);
-      Toast.show({
-        type: 'error',
-        text1: 'We were unable to sync.',
-        visibilityTime: 5000
-      });
-    }
-    setIsSyncing(false);
+    };
+    processStep();
   };
 
   const stopSync = () => {
     stopFlagRef.current = true;
-    setIsSyncing(false);
   };
 
   return (

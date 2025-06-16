@@ -58,16 +58,16 @@ export default function TransactionDetail() {
         ₹{transaction.amount}
       </Text>
 
-      <Text style={styles.label}>Category</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Category</Text>
       <Text style={[styles.value, { color: theme.text }]}>{transaction.category}</Text>
 
-      <Text style={styles.label}>Type</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Type</Text>
       <Text style={[styles.value, { color: theme.text }]}>{transaction.type}</Text>
 
-      <Text style={styles.label}>Date</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Date</Text>
       <Text style={[styles.value, { color: theme.text }]}>{new Date(transaction.date).toLocaleString()}</Text>
 
-      <Text style={styles.label}>SMS</Text>
+      <Text style={[styles.label, { color: theme.text }]}>SMS</Text>
       <Text style={[styles.value, { color: theme.text }]}>{transaction.smsBody}</Text>
 
       <View style={styles.buttonRow}>
@@ -113,7 +113,7 @@ export default function TransactionDetail() {
 const styles = StyleSheet.create({
   container: { padding: 20, minHeight: '100%' },
   amount: { fontSize: 36, fontWeight: 'bold', marginBottom: 20 },
-  label: { marginTop: 10, fontSize: 14, fontWeight: '600' },
+  label: { marginTop: 10, fontSize: 14, fontWeight: '300' },
   value: { fontSize: 16, marginBottom: 10 },
   buttonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 },
   button: { padding: 12, borderRadius: 8, flex: 1, marginHorizontal: 4, alignItems: 'center' },

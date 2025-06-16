@@ -1,18 +1,30 @@
 import React, { createContext, useContext, useState } from "react";
+import { AIOptions } from "src/screens/settings/constants";
 
-export interface IAppContext { AI_BASE_URL: string, model: string, value: string }
+export enum AIType {
+  OLLAMA,
+  OpenAI
+}
+export interface AIDetails { baseURL: string, model: string, label: string, value: string, type: AIType }
+export interface IAppContext { aiDetails: AIDetails, setAIDetails: React.Dispatch<React.SetStateAction<AIDetails>> }
 
 const AppContext = createContext<{
-  state: IAppContext, setState: React.Dispatch<React.SetStateAction<IAppContext>>
-}>({ state: { AI_BASE_URL: "http://192.168.29.144:11434/api/generate", model: 'llama3.2', value: 'OLLAMA' }, setState: () => { } });
+  state: IAppContext
+}>({
+  state: {
+    aiDetails: AIOptions[0],
+    setAIDetails: () => { }
+  },
+});
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, setState] = useState({
-    AI_BASE_URL: "http://192.168.29.144:11434/api/generate",
-    model: 'llama3.2',
-    value: 'OLLAMA'
-  });
-  return (<AppContext.Provider value={{ state, setState }}>
+  const [aiDetails, setAIDetails] = useState(AIOptions[0]);
+  return (<AppContext.Provider value={{
+    state: {
+      aiDetails,
+      setAIDetails
+    }
+  }}>
     {children}
   </AppContext.Provider>);
 }

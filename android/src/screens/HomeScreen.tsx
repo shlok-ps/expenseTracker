@@ -7,7 +7,7 @@ import { useAppInit } from 'src/App';
 import { useSync } from 'src/context/SyncContext';
 import { useTheme } from 'src/context/ThemeContext';
 import realm from 'src/database';
-import { ITransaction } from 'src/types/transaction';
+import { ITransaction, TransactionType } from 'src/types/transaction';
 
 const HomeScreen = () => {
   useAppInit()
@@ -31,7 +31,7 @@ const HomeScreen = () => {
         </Text>
         <Text
           style={{
-            color: item.type === 0 ? theme.red : theme.green,
+            color: item.type === TransactionType.CREDIT ? theme.green : theme.red,
             fontWeight: 'bold',
           }}
         >
@@ -51,7 +51,6 @@ const HomeScreen = () => {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <RealmPlugin realms={[realm]} />
       <Text style={[styles.header, { color: theme.text }]}>Home
-        <Button title={'S'} onPress={startSync}></Button>
       </Text>
       <FlatList
         data={transactions}
