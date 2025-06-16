@@ -64,8 +64,17 @@ export default function TransactionDetail() {
       <Text style={[styles.label, { color: theme.text }]}>Type</Text>
       <Text style={[styles.value, { color: theme.text }]}>{transaction.type}</Text>
 
+      <Text style={[styles.label, { color: theme.text }]}>From Account</Text>
+      <Text style={[styles.value, { color: theme.text }]}>{transaction.fromAccount}</Text>
+
+      <Text style={[styles.label, { color: theme.text }]}>ToAccount</Text>
+      <Text style={[styles.value, { color: theme.text }]}>{transaction.toAccount}</Text>
+
       <Text style={[styles.label, { color: theme.text }]}>Date</Text>
-      <Text style={[styles.value, { color: theme.text }]}>{new Date(transaction.date).toLocaleString()}</Text>
+      <Text style={[styles.value, { color: theme.text }]}>{transaction.date ? new Date(transaction.date).toLocaleString() : ''}</Text>
+
+      <Text style={[styles.label, { color: theme.text }]}>Source Date</Text>
+      <Text style={[styles.value, { color: theme.text }]}>{new Date(transaction.sourceDateTime).toLocaleString()}</Text>
 
       <Text style={[styles.label, { color: theme.text }]}>SMS</Text>
       <Text style={[styles.value, { color: theme.text }]}>{transaction.smsBody}</Text>

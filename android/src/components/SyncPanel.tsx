@@ -24,7 +24,9 @@ export default function SmsSyncPanel() {
   }, [isSyncing])
 
   const resetSyncedTill = async () => {
-    await saveLastSyncedDateTime(0);
+    const today = new Date();
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    await saveLastSyncedDateTime(monthStart.getTime());
     getAndPopulateSyncedDate()
   }
   const stopSync = () => {

@@ -1,6 +1,6 @@
 export enum TransactionType {
-  CREDIT,
-  DEBIT
+  CREDIT = 'CREDIT',
+  DEBIT = 'DEBIT'
 };
 
 export interface ITransaction {

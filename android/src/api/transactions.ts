@@ -37,6 +37,7 @@ const getTransactions = async (id?: string) => {
           type
           category
           date
+          sourceDateTime
           description
           isDuplicate
           fromAccount
@@ -52,6 +53,7 @@ const getTransactions = async (id?: string) => {
           type
           category
           date
+          sourceDateTime
           description
           fromAccount
           toAccount

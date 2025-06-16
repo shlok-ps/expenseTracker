@@ -40,7 +40,6 @@ export const parseSMSRegEx = (msg: any) => {
 
 export const parseSMSAI = async (appContext: AIDetails, msg: IMessage): Promise<ITransaction> => {
   const aiResponse = await analyzeSMS(appContext, msg.body)
-  console.log('aiResponse: ', aiResponse);
   const data = JSON.parse(aiResponse);
   return {
     id: msg._id.toString(),
@@ -56,7 +55,6 @@ export const parseSMSAI = async (appContext: AIDetails, msg: IMessage): Promise<
     source: 'sms',
     sourceDescription: msg.address,
   }
-  //  return { id: msg._id.toString(), description: "", amount: 0, type: TransactionType.DEBIT, date: 0, category: "", smsBody: msg.body, fromAccount: "", toAccount: "", }
 }
 
 export interface IMessage {
@@ -66,12 +64,14 @@ export interface IMessage {
   address: string;
 }
 
-const getSMSList = (minDate: number, startIndex: number): Promise<IMessage[]> => {
+const getSMSList = (maxDate: number, startIndex: number): Promise<IMessage[]> => {
   return new Promise((resolve, reject) => {
+    const today = new Date();
+    const monthStartDate = new Date(today.getFullYear(), today.getMonth(), 1);
     SmsAndroid.list(
       JSON.stringify({
         box: 'inbox',
-        minDate: minDate,
+        minDate: monthStartDate.getTime(),
       }),
       (fail: string) => reject(fail),
       async (_: number, smsList: string) => {
@@ -112,11 +112,15 @@ export const getSMSListFromLastSyncedDate = async (): Promise<IMessage[]> => {
   }
 }
 
-export const analyseAndSaveSMSToServer = async (appContext: AIDetails, addTransactionsToServer: Function, smsList: IMessage[]) => {
+export const analyseAndSaveSMSToServer = async (appContext: AIDetails, addTransactionsToServer: Function, smsList: IMessage[], getStopSignal: () => boolean) => {
   const transanctions = [];
   for (let message of smsList) {
-    const aiRes = await parseSMSAI(appContext, message)
-    aiRes.amount && transanctions.push(aiRes);
+    if (!getStopSignal()) {
+      const aiRes = await parseSMSAI(appContext, message)
+      aiRes.amount && transanctions.push(aiRes);
+    } else {
+      throw new Error("Sync stopped by user");
+    }
   }
   await addTransactionsToServer(transanctions);
   saveLastSyncedDateTime(smsList[smsList.length - 1].date)
