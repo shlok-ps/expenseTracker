@@ -12,6 +12,7 @@ RUN npm install
 COPY . .
 
 # Build (optional, if using TypeScript)
+RUN npm run generate
 RUN npm run build
 
 # Download wait tool
