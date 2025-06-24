@@ -21,10 +21,10 @@ export const AIOptions: AIDetails[] = [
     model: "o3-mini"
   },
   {
-    label: "Local Ollama",
+    label: "Shlok Dell",
     value: "OLLAMA",
     type: AIType.OLLAMA,
-    baseURL: "http://192.168.29.144:11434/api/generate",
+    baseURL: "http://debian.local:11434/api/generate",
     model: 'llama3.2'
   },
 ]

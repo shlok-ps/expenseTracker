@@ -64,20 +64,20 @@ export interface IMessage {
   address: string;
 }
 
-const getSMSList = (maxDate: number, startIndex: number): Promise<IMessage[]> => {
+const getSMSList = (minDate: number): Promise<IMessage[]> => {
   return new Promise((resolve, reject) => {
     const today = new Date();
     const monthStartDate = new Date(today.getFullYear(), today.getMonth(), 1);
     SmsAndroid.list(
       JSON.stringify({
         box: 'inbox',
-        minDate: monthStartDate.getTime(),
+        minDate: minDate ?? monthStartDate.getTime(),
       }),
       (fail: string) => reject(fail),
       async (_: number, smsList: string) => {
         const messages = JSON.parse(smsList) as IMessage[];
         console.log("Fetched SMS messages: ", messages.length);
-        resolve(messages);
+        resolve(messages.sort((a, b) => a.date - b.date));
       }
     );
   });
@@ -104,7 +104,7 @@ export const getSMSListFromLastSyncedDate = async (): Promise<IMessage[]> => {
   const granted = await requestSMSPermission();
   if (granted) {
     let initialDate = await getLastSyncedDateTime();
-    const smsList = await getSMSList(initialDate, 0)
+    const smsList = await getSMSList(initialDate)
     return smsList
   } else {
     Alert.alert("Permission Denied", "Please grant SMS permission to sync messages.");
@@ -122,7 +122,7 @@ export const analyseAndSaveSMSToServer = async (appContext: AIDetails, addTransa
       throw new Error("Sync stopped by user");
     }
   }
-  await addTransactionsToServer(transanctions);
+  transanctions.length && await addTransactionsToServer(transanctions);
   saveLastSyncedDateTime(smsList[smsList.length - 1].date)
 }
 

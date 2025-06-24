@@ -6,12 +6,14 @@ import { getLastSyncedDateTime, saveLastSyncedDateTime } from 'src/services/sms/
 import commonStyles from 'common/commonStyles';
 import { useEffect, useMemo, useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import DatePicker, { RangeOutput, SingleOutput } from 'react-native-neat-date-picker';
 
 export default function SmsSyncPanel() {
   const { isSyncing, progress, startSync, stopSync: _stopSync } = useSync();
   const { theme } = useTheme();
   const [syncedTill, setSyncedTill] = useState<Date | null>(null);
   const [enableStopping, setEnableStopping] = useState(true);
+  const [showDatePickerSingle, setShowDatePickerSingle] = useState(false);
 
   const getAndPopulateSyncedDate = async () => {
     setSyncedTill(new Date(await getLastSyncedDateTime()));
@@ -64,7 +66,7 @@ export default function SmsSyncPanel() {
               {syncedTill?.toLocaleString() || 'Never Synced'}
             </Text>
           </View>
-          <TouchableOpacity onPress={resetSyncedTill} style={{ padding: 10, borderRadius: 5 }}>
+          <TouchableOpacity onPress={() => setShowDatePickerSingle(true)} style={{ padding: 10, borderRadius: 5 }}>
             <MaterialIcons name='refresh' style={{ color: theme.primary, fontSize: 25 }} />
           </TouchableOpacity>
           <TouchableOpacity onPress={startSync} style={{ padding: 10, borderRadius: 5 }}>

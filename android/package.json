@@ -22,6 +22,7 @@
 		"react-native-gesture-handler": "~2.24.0",
 		"react-native-get-sms-android": "^2.1.0",
 		"react-native-html-to-pdf": "^0.12.0",
+		"react-native-neat-date-picker": "^1.6.0",
 		"react-native-progress": "^5.0.1",
 		"react-native-reanimated": "~3.17.4",
 		"react-native-safe-area-context": "5.4.0",
@@ -41,7 +42,9 @@
 	"scripts": {
 		"android": "expo run:android",
 		"ios": "expo run:ios",
-		"start": "npx expo run:android"
+		"start": "npx expo run:android",
+		"build:debug": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res; cd android; ./gradlew assembleDebug",
+		"build:release": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/; cd android; ./gradlew assembleRelease --no-daemon"
 	},
 	"devDependencies": {
 		"@types/react": "~19.0.10",

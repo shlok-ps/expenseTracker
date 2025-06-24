@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from 'src/context/ThemeContext';
 import SmsSyncPanel from 'src/components/SyncPanel';
 import { AIDetails, useAppContext } from 'src/context/AppContext';
 import { AIOptions } from './constants';
+import DatePicker from 'react-native-neat-date-picker';
 
 const SettingsScreen = () => {
   const { theme, variant, setThemeVariant } = useTheme();
@@ -31,6 +32,7 @@ const SettingsScreen = () => {
     setThemeVariant(value);
   };
 
+  const [datePickerOpen, setDatePickerOpen] = useState(true);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -54,6 +56,7 @@ const SettingsScreen = () => {
           borderColor: theme.primary,
         }}
         textStyle={{ color: theme.text }}
+        zIndex={themeOpen ? 99 : 0}
       />
 
       <DropDownPicker
@@ -75,10 +78,22 @@ const SettingsScreen = () => {
           backgroundColor: theme.surface,
           borderColor: theme.primary,
         }}
-        zIndex={themeOpen ? -1 : undefined}
+        zIndex={aiOpen ? 99 : 0}
         textStyle={{ color: theme.text }}
       />
       <SmsSyncPanel />
+
+      <Button title="Open" onPress={() => setDatePickerOpen(true)}></Button>
+      <DatePicker
+        isVisible={datePickerOpen}
+        mode={'single'}
+        onCancel={() => { setDatePickerOpen(false) }}
+        onConfirm={async (output) => {
+          console.log("Selected date:", output.date);
+          const newTime = output.date?.getTime();
+          setDatePickerOpen(false)
+        }}
+      />
     </View>
   );
 };
