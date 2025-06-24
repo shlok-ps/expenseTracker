@@ -1,4 +1,4 @@
-import { hashPassword, comparePasswords, generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/auth'
+import { hashPassword, comparePasswords, generateAccessToken, generateRefreshToken, verifyRefreshToken } from 'utils/auth'
 
 export const userResolvers = {
   Mutation: {

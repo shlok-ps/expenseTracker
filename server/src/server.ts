@@ -1,15 +1,15 @@
 import { ApolloServer } from 'apollo-server'
 import { readFileSync } from 'fs'
-import { transactionResolvers } from 'src/graphql/resolvers/transaction'
+import { transactionResolvers } from 'app/resolvers/transaction'
 import { context, createContext } from './context'
 import { join } from 'path'
 import { config } from 'dotenv'
-import { dateScalarResolver } from './graphql/scalars/dateScalar'
-import { userResolvers } from './graphql/resolvers/user'
+import { dateScalarResolver } from 'app/scalars/dateScalar'
+import { userResolvers } from 'app/resolvers/user'
 
 config()
 
-const typeDefs = readFileSync(join(__dirname, 'graphql/schema.graphql'), 'utf-8')
+const typeDefs = readFileSync(join(__dirname, 'app/schema.graphql'), 'utf-8')
 
 const server = new ApolloServer({
   typeDefs,

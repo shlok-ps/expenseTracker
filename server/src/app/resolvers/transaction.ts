@@ -1,4 +1,5 @@
 import { AuthenticationError } from "apollo-server"
+import { ITransaction } from "./types";
 
 export const transactionResolvers = {
   Query: {
@@ -8,7 +9,7 @@ export const transactionResolvers = {
     },
   },
   Mutation: {
-    addTransaction: async (_: any, args: any, { prisma, userId }: any) => {
+    addTransaction: async (_: any, args: { transactions: ITransaction[] }, { prisma, userId }: any) => {
       if (!userId) throw new AuthenticationError("Not Authenticated");
       console.log("args: ", args.transactions[0])
 
@@ -19,7 +20,10 @@ export const transactionResolvers = {
         data: {
           transactions: {
             createMany: {
-              data: args.transactions,
+              data: args.transactions.map(t => ({
+                ...t,
+                id: userId + '_' + t.id, // Ensure unique ID per user
+              })),
               skipDuplicates: true
             }
           }
