@@ -13,6 +13,7 @@ services:
   apollo-server:
     container_name: expenses-app
     build: .
+    restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/expenses
       WAIT_HOSTS: db:5432
