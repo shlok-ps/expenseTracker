@@ -6,7 +6,6 @@ import { useTheme } from 'src/context/ThemeContext';
 import SmsSyncPanel from 'src/components/SyncPanel';
 import { AIDetails, useAppContext } from 'src/context/AppContext';
 import { AIOptions } from './constants';
-import DatePicker from 'react-native-neat-date-picker';
 
 const SettingsScreen = () => {
   const { theme, variant, setThemeVariant } = useTheme();
@@ -20,11 +19,9 @@ const SettingsScreen = () => {
     { label: 'Macchiato ☁️', value: 'macchiato' },
     { label: 'Mocha 🍫', value: 'mocha' },
   ]);
-
   useEffect(() => {
     setSelectedTheme(variant);
   }, [variant]);
-
   const updateTheme = async (getValue: () => string) => {
     const value = getValue();
     setSelectedTheme(value);
@@ -32,14 +29,10 @@ const SettingsScreen = () => {
     setThemeVariant(value);
   };
 
-  const [datePickerOpen, setDatePickerOpen] = useState(true);
-
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Text style={[styles.title, { color: theme.text }]}>App Settings</Text>
-
       <Text style={[styles.label, { color: theme.text }]}>Choose Theme:</Text>
-
       <DropDownPicker
         open={themeOpen}
         value={selectedTheme}
@@ -58,7 +51,6 @@ const SettingsScreen = () => {
         textStyle={{ color: theme.text }}
         zIndex={themeOpen ? 99 : 0}
       />
-
       <DropDownPicker
         open={aiOpen}
         value={aiDetails.value}
@@ -82,18 +74,6 @@ const SettingsScreen = () => {
         textStyle={{ color: theme.text }}
       />
       <SmsSyncPanel />
-
-      <Button title="Open" onPress={() => setDatePickerOpen(true)}></Button>
-      <DatePicker
-        isVisible={datePickerOpen}
-        mode={'single'}
-        onCancel={() => { setDatePickerOpen(false) }}
-        onConfirm={async (output) => {
-          console.log("Selected date:", output.date);
-          const newTime = output.date?.getTime();
-          setDatePickerOpen(false)
-        }}
-      />
     </View>
   );
 };

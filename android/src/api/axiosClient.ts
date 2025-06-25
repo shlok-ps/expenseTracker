@@ -3,7 +3,7 @@ import { getAccessToken, getRefreshToken, storeTokens, clearTokens } from '../ut
 import { router } from 'expo-router'; // Adjust the import based on your router setup
 
 const baseURL = 'http://192.168.29.144:4000/graphql'
-//const baseURL = 'http://10.0.2.2:4000/graphql'
+// const baseURL = 'http://shlok-rpi.local:4000/graphql'
 
 const api = axios.create({
   baseURL: baseURL,
