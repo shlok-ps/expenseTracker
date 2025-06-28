@@ -5,7 +5,12 @@ export const transactionResolvers = {
   Query: {
     transactions: (_: any, args: any, { prisma, userId }: any) => {
       if (!userId) throw new AuthenticationError("Not Authenticated 2");
-      return prisma.transaction.findMany({ where: { userId, id: args?.id ?? undefined } })
+      return prisma.transaction.findMany({
+        where: { userId, id: args?.id ?? undefined },
+        orderBy: {
+          sourceDateTime: 'desc'
+        }
+      })
     },
   },
   Mutation: {
