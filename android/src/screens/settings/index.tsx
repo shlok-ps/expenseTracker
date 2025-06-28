@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from 'src/context/ThemeContext';
 import SmsSyncPanel from 'src/components/SyncPanel';
 import { AIDetails, useAppContext } from 'src/context/AppContext';
 import { AIOptions } from './constants';
+import { MaterialIcons } from '@expo/vector-icons';
+import { logout } from 'src/api/auth';
 
 const SettingsScreen = () => {
   const { theme, variant, setThemeVariant } = useTheme();
@@ -74,11 +76,22 @@ const SettingsScreen = () => {
         textStyle={{ color: theme.text }}
       />
       <SmsSyncPanel />
-    </View>
+      <TouchableOpacity onPress={logout} style={[styles.loginButton, { backgroundColor: theme.surface }]}>
+        <MaterialIcons name="logout" size={24} color={theme.red} />
+        <Text style={{ color: theme.text }}>Logout</Text>
+      </TouchableOpacity>
+    </View >
   );
 };
 
 const styles = StyleSheet.create({
+  loginButton: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    maxHeight: 50,
+  },
   container: {
     padding: 14,
     gap: 10,

@@ -6,6 +6,11 @@ export const storeTokens = async (accessToken: string, refreshToken: string) => 
   await AsyncStorage.setItem('refreshToken', refreshToken)
 }
 
+export const removeTokens = async () => {
+  await AsyncStorage.removeItem('accessToken')
+  await AsyncStorage.removeItem('refreshToken')
+}
+
 export const getAccessToken = async () => await AsyncStorage.getItem('accessToken')
 export const getRefreshToken = async () => await AsyncStorage.getItem('refreshToken')
 
