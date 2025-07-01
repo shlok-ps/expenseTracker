@@ -36,10 +36,10 @@ services:
     environment:
       RABBITMQ_URL: amqp://localhost
       QUEUE_NAME: expenses_app_messages
-      AI_BASE_URL: ""
-      SERVER_BASE_URL: ""
+      AI_BASE_URL: http://expenses-ai:8000
+      SERVER_BASE_URL: http://expenses-app:4000
       LLM_BASE_URL: ""
-      JWT_SECRET: ""
+      JWT_SECRET: myJWTSecret
 
   sms-ai:
     build: sms_classifier
