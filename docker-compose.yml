@@ -28,14 +28,16 @@ services:
       - db
 
   worker:
+    container_name: expenses-worker
     build: ./worker
+    restart: unless-stopped
     environment:
       RABBITMQ_URL: amqp://localhost
       QUEUE_NAME: expenses_app_messages
 
   sms-ai:
     build: sms_classifier
-    container_name: sms-ai
+    container_name: expenses-ai
     restart: unless-stopped
 
 volumes:

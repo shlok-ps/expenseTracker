@@ -2,5 +2,6 @@ FROM node:18
 WORKDIR /app
 COPY . .
 RUN npm install
-CMD ["node", "worker.js"]
+RUN npm run build
+CMD ["node", "dist/worker.js"]
 
