@@ -8,22 +8,35 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: expenses
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   apollo-server:
     container_name: expenses-app
-    build: .
+    build: server
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/expenses
       WAIT_HOSTS: db:5432
       WAIT_TIMEOUT: 60
+      QUEUE_NAME: expenses_app_messages
     ports:
-      - "4000:4000"
+      - "127.0.0.1:4000:4000"
     depends_on:
       - db
 
+  worker:
+    build: ./worker
+    environment:
+      RABBITMQ_URL: amqp://localhost
+      QUEUE_NAME: expenses_app_messages
+
+  sms-ai:
+    build: sms_classifier
+    container_name: sms-ai
+    restart: unless-stopped
+
 volumes:
   pgdata:
-

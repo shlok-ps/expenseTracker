@@ -16,7 +16,7 @@ export const transactionResolvers = {
   Mutation: {
     addTransaction: async (_: any, args: { transactions: ITransaction[] }, { prisma, userId }: any) => {
       if (!userId) throw new AuthenticationError("Not Authenticated");
-      console.log("args: ", args.transactions[0])
+      console.log("saving Transactions: ", args.transactions.map(t => t.id))
 
       const userDetails = await prisma.user.update({
         where: {

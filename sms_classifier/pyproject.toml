@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "sms-api"
+version = "0.1.0"
+description = "FastAPI SMS classification API"
+authors = ["Your Name <you@example.com>"]
+packages = [{ include = "app" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.110.0"
+uvicorn = "^0.29.0"
+scikit-learn = "^1.4.2"
+joblib = "^1.4.0"
+pandas = "^2.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+

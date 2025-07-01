@@ -6,6 +6,7 @@ import { join } from 'path'
 import { config } from 'dotenv'
 import { dateScalarResolver } from 'app/scalars/dateScalar'
 import { userResolvers } from 'app/resolvers/user'
+import { parseSMSResolver } from 'app/resolvers/parseSMS'
 
 config()
 
@@ -13,7 +14,7 @@ const typeDefs = readFileSync(join(__dirname, 'app/schema.graphql'), 'utf-8')
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers: [transactionResolvers, dateScalarResolver, userResolvers],
+  resolvers: [transactionResolvers, dateScalarResolver, userResolvers, parseSMSResolver],
   context: createContext
 })
 
