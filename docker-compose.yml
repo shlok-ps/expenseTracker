@@ -5,46 +5,62 @@ services:
     container_name: expenses-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       POSTGRES_DB: expenses
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - default
 
-  apollo-server:
+  app:
     container_name: expenses-app
     build: server
     restart: unless-stopped
     environment:
       WAIT_HOSTS: db:5432
       WAIT_TIMEOUT: 60
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/expenses
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/expenses
       QUEUE_NAME: expenses_app_messages
-      RABBITMQ_URL: amqp://localhost
-      JWT_SECRET: myJWTSecret
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "127.0.0.1:4000:4000"
     depends_on:
       - db
+    networks:
+      - default
+
+  ai:
+    build: sms_classifier
+    container_name: expenses-ai
+    restart: unless-stopped
+    networks:
+      - default
 
   worker:
     container_name: expenses-worker
     build: ./worker
     restart: unless-stopped
     environment:
-      RABBITMQ_URL: amqp://localhost
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}
       QUEUE_NAME: expenses_app_messages
-      AI_BASE_URL: http://expenses-ai:8000
-      SERVER_BASE_URL: http://expenses-app:4000
-      LLM_BASE_URL: ""
-      JWT_SECRET: myJWTSecret
-
-  sms-ai:
-    build: sms_classifier
-    container_name: expenses-ai
-    restart: unless-stopped
+      AI_BASE_URL: http://ai:8000
+      SERVER_BASE_URL: http://app:4000
+      LLM_BASE_URL: ${OLLAMA_BASEURL}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      app:
+        condition: service_started
+      ai:
+        condition: service_started
+    networks:
+      - default
 
 volumes:
   pgdata:
+
+networks:
+  default: {}
