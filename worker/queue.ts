@@ -24,7 +24,7 @@ export async function sendToQueue(data: any): Promise<void> {
 }
 
 export async function consumeFromQueue(
-  callback: (data: any) => Promise<void>
+  callback: (data: any) => Promise<boolean>
 ): Promise<void> {
   if (!channel) await connect();
 
@@ -32,8 +32,8 @@ export async function consumeFromQueue(
     await channel.consume(QUEUE_NAME, async (msg: ConsumeMessage | null) => {
       if (msg !== null) {
         const content = JSON.parse(msg.content.toString());
-        await callback(content);
-        channel!.ack(msg);
+        const processed = await callback(content);
+        if (processed) channel!.ack(msg);
       }
     });
   }

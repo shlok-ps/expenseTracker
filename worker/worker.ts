@@ -108,9 +108,10 @@ consumeFromQueue(async (messageBody: IQueueMessage) => {
       }
       console.log("Transaction saved to server:", transactionFromMessage.id);
     }
+    return true;
   } catch (e) {
     console.error("Error processing message:", e);
-    throw e;
+    return false;
   }
 });
 
