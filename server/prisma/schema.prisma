@@ -13,18 +13,18 @@ model Transaction {
   type            String   // "credit" or "debit"
   category        String
   date            DateTime?
-  sourceDateTime  DateTime @map(source_date_time)
+  sourceDateTime  DateTime @map("source_date_time")
   description     String?
-  isDuplicate     Boolean  @default(false) @map(is_duplicate)
-  relatedGroupId  String?  @map(related_group_id)
+  isDuplicate     Boolean  @default(false) @map("is_duplicate")
+  relatedGroupId  String?  @map("related_group_id")
   createdAt       DateTime @default(now())
-  userId          String   @map(user_id)
+  userId          String   @map("user_id")
   user            User     @relation(fields: [userId], references: [id])
-  fromAccount     String?  @map(from_account)
-  toAccount       String?  @map(to_account)
-  smsBody         String   @map(sms_body)
+  fromAccount     String?  @map("from_account")
+  toAccount       String?  @map("to_account")
+  smsBody         String   @map("sms_body")
   source          String? // "sms" or "manual"
-  sourceDescription String?  @map(source_description)
+  sourceDescription String?  @map("source_description")
   @@map("transactions")
 }
 
@@ -33,7 +33,7 @@ model User {
   email    String   @unique
   password String
   refreshToken   String?
-  createdAt DateTime @default(now()) @map('created_at')
+  createdAt DateTime @default(now()) @map("created_at")
   transactions Transaction[]
   @@map("users")
 }
