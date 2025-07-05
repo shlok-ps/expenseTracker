@@ -101,12 +101,17 @@ consumeFromQueue(async (messageBody: IQueueMessage) => {
     console.log("Processing message:", messageBody.message.body, "Is Transaction:", isTransaction);
     if (isTransaction) {
       const transactionFromMessage = await getTransactionFromMessage(messageBody.message);
-      console.log("Transaction extracted:", transactionFromMessage);
-      const savedTran = await saveTransactionToServer(transactionFromMessage, messageBody.userId);
-      if (savedTran.data.errors?.length > 0) {
-        throw new Error("Error saving transaction: " + JSON.stringify(savedTran.data.errors));
+      if (transactionFromMessage.amount && transactionFromMessage.type) {
+        console.log("Transaction extracted:", transactionFromMessage);
+        const savedTran = await saveTransactionToServer(transactionFromMessage, messageBody.userId);
+        if (savedTran.data.errors?.length > 0) {
+          throw new Error("Error saving transaction: " + JSON.stringify(savedTran.data.errors));
+        }
+        console.log("Transaction saved to server:", transactionFromMessage.id);
       }
-      console.log("Transaction saved to server:", transactionFromMessage.id);
+      else {
+        console.log("Transaction not saved due to missing amount or type:", transactionFromMessage);
+      }
     }
     return true;
   } catch (e) {
