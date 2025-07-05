@@ -58,12 +58,9 @@ services:
         condition: service_started
     networks:
       - default
-      - systemapps_default
 
 volumes:
   pgdata:
 
 networks:
   default: {}
-  systemapps_default:
-    external: true
