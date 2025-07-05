@@ -5,6 +5,9 @@ bun.lockb
 yarn-error.log
 yarn.lock
 package-lock.json
+**/*.env.*
+android/android/app/shlok_keystore.keystore
+docker-compose.override.yml
 
 # Web
 web-build
