@@ -1,4 +1,4 @@
-import { connect as amqpConnect, Channel, Connection, ConsumeMessage } from "amqplib";
+import { connect as amqpConnect, Channel, ConsumeMessage } from "amqplib";
 import { config } from 'dotenv';
 config();
 
@@ -34,6 +34,7 @@ export async function consumeFromQueue(
         const content = JSON.parse(msg.content.toString());
         const processed = await callback(content);
         if (processed) channel!.ack(msg);
+        else channel!.nack(msg, false, false); // Requeue the message if processing failed
       }
     });
   }
