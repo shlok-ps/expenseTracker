@@ -1,10 +1,13 @@
 import axios from 'axios'
 import { getAccessToken, getRefreshToken, storeTokens, clearTokens } from '../utils/auth'
 import { router } from 'expo-router'; // Adjust the import based on your router setup
+import Constants from 'expo-constants';
+import { ExtraEnv } from 'src/types/env';
 
-const baseURL = 'http://192.168.29.144:4000/graphql'
-// const baseURL = 'http://shlok-rpi.local:4000/graphql'
+const { API_URL } = Constants.expoConfig?.extra as ExtraEnv;
+const baseURL = API_URL;
 
+console.log("APIURL: ", baseURL)
 const api = axios.create({
   baseURL: baseURL,
   headers: { 'Content-Type': 'application/json' },

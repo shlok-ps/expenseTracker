@@ -56,7 +56,7 @@ const SettingsScreen = () => {
       <DropDownPicker
         open={aiOpen}
         value={aiDetails.value}
-        items={AIOptions}
+        items={AIOptions.filter(o => !o.disabled)}
         setOpen={setAIOpen}
         setValue={(getValue) => {
           const value = getValue("");

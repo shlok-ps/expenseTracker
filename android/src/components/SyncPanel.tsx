@@ -15,6 +15,7 @@ export default function SmsSyncPanel() {
   const [syncedTill, setSyncedTill] = useState<Date>(new Date());
   const [enableStopping, setEnableStopping] = useState(true);
   const [showDatePickerSingle, setShowDatePickerSingle] = useState(false);
+
   const getAndPopulateSyncedDate = async () => {
     setSyncedTill(new Date(await getLastSyncedDateTime()));
   }
@@ -24,12 +25,7 @@ export default function SmsSyncPanel() {
       setEnableStopping(true)
     }
   }, [isSyncing])
-  const resetSyncedTill = async () => {
-    const today = new Date();
-    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-    await saveLastSyncedDateTime(monthStart.getTime());
-    getAndPopulateSyncedDate()
-  }
+
   const stopSync = () => {
     setEnableStopping(false)
     _stopSync()

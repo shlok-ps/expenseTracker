@@ -123,6 +123,5 @@ export const analyseAndSaveSMSToServer = async (appContext: AIDetails, addTransa
     }
   }
   transanctions.length && await addTransactionsToServer(transanctions);
-  saveLastSyncedDateTime(smsList[smsList.length - 1].date)
 }
 

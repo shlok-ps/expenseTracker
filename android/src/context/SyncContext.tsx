@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useRef } from 'react';
 import Toast, { ErrorToast } from 'react-native-toast-message';
+import { useQueueMessages } from 'src/api/messages';
 import { useCreateTransactionMutation } from 'src/api/transactions';
 import { useAppContext } from 'src/context/AppContext';
-import { analyseAndSaveSMSToServer, getSMSListFromLastSyncedDate, IMessage } from 'src/services/sms/helper';
+import { analyseAndSaveSMSToServer, getSMSListFromLastSyncedDate, IMessage, saveLastSyncedDateTime } from 'src/services/sms/helper';
 
 interface SyncContextType {
   isSyncing: boolean;
@@ -20,7 +21,8 @@ const SyncContext = createContext<SyncContextType>({
 
 export const useSync = () => useContext(SyncContext);
 
-export const MAX_SMS_COUNT = 5; // Maximum number of SMS to fetch in one go
+export const MESSAGE_SYNCING_MODE = 'queue'; // 'queue' or 'AI'
+export const MAX_SMS_COUNT = 10; // Maximum number of SMS to fetch in one go
 
 export const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   const [isSyncing, setIsSyncing] = useState(false);
@@ -28,10 +30,25 @@ export const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   const stopFlagRef = useRef(false);
   const appContext = useAppContext();
   const { mutateAsync: addTransactionsToServer } = useCreateTransactionMutation();
+  const { mutateAsync: queueMessages } = useQueueMessages();
 
   const syncIthBatch = async (allSMSList: IMessage[], i: number, getStopSignal: () => boolean) => {
-    const smsList = allSMSList.slice(i * MAX_SMS_COUNT, i * MAX_SMS_COUNT + MAX_SMS_COUNT)
-    await analyseAndSaveSMSToServer(appContext.state.aiDetails, addTransactionsToServer, smsList, getStopSignal);
+    if (MESSAGE_SYNCING_MODE == 'queue') {
+      await queueMessages(
+        allSMSList
+          .slice(i * MAX_SMS_COUNT, i * MAX_SMS_COUNT + MAX_SMS_COUNT)
+          .map(sms => ({
+            _id: sms._id.toString(),
+            address: sms.address,
+            body: sms.body,
+            date: sms.date
+          }))
+      );
+    } else {
+      const smsList = allSMSList.slice(i * MAX_SMS_COUNT, i * MAX_SMS_COUNT + MAX_SMS_COUNT)
+      await analyseAndSaveSMSToServer(appContext.state.aiDetails, addTransactionsToServer, smsList, getStopSignal);
+    }
+    return (allSMSList[i * MAX_SMS_COUNT + MAX_SMS_COUNT - 1] || { date: new Date().getTime() })?.date;
   }
 
   const startSync = async () => {
@@ -51,7 +68,9 @@ export const SyncProvider = ({ children }: { children: React.ReactNode }) => {
         console.log(`Processing batch ${i + 1} of ${totalProgressCount}`);
         const percentage = Math.round(((i + 1) / totalProgressCount) * 100);
         try {
-          await syncIthBatch(allSMSList, i, () => stopFlagRef.current)
+          saveLastSyncedDateTime(
+            await syncIthBatch(allSMSList, i, () => stopFlagRef.current)
+          )
         } catch (error) {
           console.error("Error syncing SMS batch:", error);
           setIsSyncing(false);

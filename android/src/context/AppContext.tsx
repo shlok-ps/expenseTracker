@@ -5,7 +5,7 @@ export enum AIType {
   OLLAMA,
   OpenAI
 }
-export interface AIDetails { baseURL: string, model: string, label: string, value: string, type: AIType }
+export interface AIDetails { baseURL: string, model: string, label: string, value: string, type: AIType, disabled?: boolean }
 export interface IAppContext { aiDetails: AIDetails, setAIDetails: React.Dispatch<React.SetStateAction<AIDetails>> }
 
 const AppContext = createContext<{
