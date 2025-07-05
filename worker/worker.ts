@@ -100,7 +100,7 @@ consumeFromQueue(async (messageBody: IQueueMessage) => {
     const isTransaction = await getIsMessageATransaction(messageBody.message.body);
     console.log("Processing message:", messageBody.message.body, "Is Transaction:", isTransaction);
     if (isTransaction) {
-      const transactionFromMessage = await getTransactionFromMessage(messageBody.message);
+      const transactionFromMessage = await retry<Promise<ITransaction>>(getTransactionFromMessage.bind(null, messageBody.message));
       if (transactionFromMessage.amount && transactionFromMessage.type) {
         console.log("Transaction extracted:", transactionFromMessage);
         const savedTran = await saveTransactionToServer(transactionFromMessage, messageBody.userId);
