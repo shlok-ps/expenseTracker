@@ -1,4 +1,4 @@
-async function retry<T>(fn: () => T, retries = 3, delay = 500) {
+export async function retry<T>(fn: () => T, retries = 3, delay = 500) {
   let attempt = 0;
   while (attempt < retries) {
     try {
