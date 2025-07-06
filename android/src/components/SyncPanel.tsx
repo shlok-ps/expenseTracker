@@ -83,7 +83,9 @@ export default function SmsSyncPanel() {
             mode="single"
             date={syncedTill}
             onChange={({ date }) => {
-              setSyncedTill(date as Date)
+              const dateObj = date as Date;
+              saveLastSyncedDateTime(dateObj.getTime())
+              setSyncedTill(dateObj)
               setShowDatePickerSingle(false);
             }}
             styles={{

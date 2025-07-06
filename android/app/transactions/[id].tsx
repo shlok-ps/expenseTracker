@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Modal,
   Pressable,
@@ -16,7 +17,7 @@ import { TransactionType } from 'src/types/transaction';
 
 export default function TransactionDetail() {
   const { id } = useLocalSearchParams();
-  const { data: transactions } = useGetTransactions(id as string)
+  const { data: transactions, isLoading } = useGetTransactions(id as string)
   const { mutate: deleteTransaction } = useDeleteTransactionMutation()
   const { mutate: updateTransaction } = useUpdateTransactionMutation()
   const transaction = transactions?.[0];
@@ -26,6 +27,14 @@ export default function TransactionDetail() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editCategory, setEditCategory] = useState(transaction?.category || '');
   const [editType, setEditType] = useState(transaction?.type || 'debit');
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.background }}>
+        <ActivityIndicator size="large" color={theme.primary} />
+      </View>
+    )
+  }
 
   if (!transaction) return <Text>Transaction not found</Text>;
 
@@ -143,4 +152,3 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 });
-

@@ -1,14 +1,16 @@
 import { router } from 'expo-router';
-import React from 'react';
-import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, Button, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import RealmPlugin from 'realm-flipper-plugin-device';
 import { useGetTransactions } from 'src/api/transactions';
 import { useAppInit } from 'src/App';
 import { useSync } from 'src/context/SyncContext';
 import { useTheme } from 'src/context/ThemeContext';
 import realm from 'src/database';
+import { getLastSyncedDateTime } from 'src/services/sms/helper';
 import { ITheme } from 'src/theme/catppuccin';
 import { ITransaction, TransactionType } from 'src/types/transaction';
+import { useAuth } from 'src/utils/auth';
 
 const RenderItem = ({ item, theme }: { item: ITransaction, theme: ITheme }) => (
   <TouchableOpacity onPress={() => { router.push("/transactions/" + item.id) }}>
@@ -45,7 +47,27 @@ const RenderItem = ({ item, theme }: { item: ITransaction, theme: ITheme }) => (
 const HomeScreen = () => {
   useAppInit()
   const { theme } = useTheme();
-  const { data: transactions } = useGetTransactions()
+  const { data: transactions, refetch, isFetching, isLoading } = useGetTransactions()
+
+  const onRefresh = React.useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const { authenticated } = useAuth();
+  const { startSync } = useSync();
+  useEffect(() => {
+    if (authenticated && !!getLastSyncedDateTime()) {
+      startSync()
+    }
+  }, [authenticated])
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={theme.primary} />
+      </View>
+    )
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -56,6 +78,9 @@ const HomeScreen = () => {
         data={transactions}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <RenderItem theme={theme} item={item} />}
+        refreshControl={
+          <RefreshControl refreshing={isFetching} onRefresh={onRefresh} colors={[theme.primary]} tintColor={theme.primary} />
+        }
         ListEmptyComponent={
           <Text style={{ color: theme.text, textAlign: 'center', marginTop: 30 }}>
             No transactions yet.

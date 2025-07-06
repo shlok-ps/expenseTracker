@@ -1,5 +1,5 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Redirect, Tabs } from 'expo-router';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useTheme } from 'src/context/ThemeContext';
 import { useAuth } from 'src/utils/auth';
 
