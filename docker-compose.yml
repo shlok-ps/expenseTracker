@@ -51,6 +51,7 @@ services:
       SERVER_BASE_URL: http://app:4000/graphql
       LLM_BASE_URL: ${OLLAMA_BASEURL}
       JWT_SECRET: ${JWT_SECRET}
+      OPER_ROUTER_API_KEY: ${OPER_ROUTER_API_KEY}
     depends_on:
       app:
         condition: service_started
