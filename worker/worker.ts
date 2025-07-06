@@ -56,7 +56,7 @@ consumeFromQueue(async (messageBody: IQueueMessage) => {
         console.log("Transaction saved to server:", transactionFromMessage.id);
       }
       else {
-        console.log("Transaction not saved due to missing amount or type:", transactionFromMessage);
+        throw new Error("Transaction not saved due to missing amount or type:" + transactionFromMessage);
       }
     }
     return true;
