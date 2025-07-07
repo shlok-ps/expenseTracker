@@ -59,8 +59,14 @@ export async function consumeFromQueue(
       if (msg !== null) {
         const content = JSON.parse(msg.content.toString());
         const processed = await callback(content);
-        if (processed) channel!.ack(msg);
-        else channel!.nack(msg, false, false);
+        if (processed) {
+          console.log("Processed message:", content);
+          channel!.ack(msg);
+        }
+        else {
+          console.log("Not processed message, nacking:", content);
+          channel!.nack(msg, false, false);
+        }
       }
     });
   }
