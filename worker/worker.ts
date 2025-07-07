@@ -1,5 +1,5 @@
 import axios from "axios";
-import { consumeFromQueue } from "./queue";
+import { consumeFromQueue } from "./utils/queue";
 import { config } from 'dotenv';
 import { getWorkerToken } from "./utils/auth";
 import { getTransactionFromMessage, IMessage, ITransaction } from "./utils/smsParser";
