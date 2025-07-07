@@ -34,7 +34,7 @@ export async function consumeFromQueue(
         const content = JSON.parse(msg.content.toString());
         const processed = await callback(content);
         if (processed) channel!.ack(msg);
-        else channel!.nack(msg, false, false); // Requeue the message if processing failed
+        else channel!.nack(msg, false, true); // Requeue the message if processing failed
       }
     });
   }
