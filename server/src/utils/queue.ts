@@ -23,6 +23,7 @@ async function connect(): Promise<void> {
     durable: true,
     arguments: {
       'x-dead-letter-exchange': DEAD_LETTER_EXCHANGE_NAME,
+      'x-dead-letter-routing-key': '',
     },
   });
   await channel.prefetch(1);
@@ -38,6 +39,7 @@ export async function sendToQueue(data: any): Promise<void> {
 
 export async function requeueFromDLQ(): Promise<void> {
   if (!channel) await connect();
+  let count = 0;
   while (true) {
     const msg = await channel!.get(DEAD_LETTER_QUEUE_NAME, { noAck: false });
     if (!msg) break;
@@ -45,7 +47,9 @@ export async function requeueFromDLQ(): Promise<void> {
       persistent: true,
     });
     channel!.ack(msg);
+    count++;
   }
+  console.log("Requeued message from DLQ, Count: ", count);
 }
 
 export async function consumeFromQueue(
@@ -57,10 +61,21 @@ export async function consumeFromQueue(
   if (channel) {
     await channel.consume(QUEUE_NAME, async (msg: ConsumeMessage | null) => {
       if (msg !== null) {
-        const content = JSON.parse(msg.content.toString());
-        const processed = await callback(content);
-        if (processed) channel!.ack(msg);
-        else channel!.nack(msg, false, false);
+        try {
+          const content = JSON.parse(msg.content.toString());
+          const processed = await callback(content);
+          if (processed) {
+            console.log("Processed message:", content);
+            channel!.ack(msg);
+          }
+          else {
+            console.log("Not processed message, nacking:", content);
+            channel!.nack(msg, false, false);
+          }
+        } catch (e) {
+          console.error("Error processing message:", e);
+          channel!.nack(msg, false, false);
+        }
       }
     });
   }

@@ -23,7 +23,9 @@ services:
       WAIT_HOSTS: db:5432
       WAIT_TIMEOUT: 60
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/expenses
-      QUEUE_NAME: expenses_app_messages
+      QUEUE_NAME: ${QUEUE_NAME}
+      DEAD_LETTER_EXCHANGE_NAME: ${DEAD_LETTER_EXCHANGE_NAME}
+      DEAD_LETTER_QUEUE_NAME: ${DEAD_LETTER_QUEUE_NAME}
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}
       JWT_SECRET: ${JWT_SECRET}
     ports:
@@ -46,12 +48,14 @@ services:
     restart: unless-stopped
     environment:
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}
-      QUEUE_NAME: expenses_app_messages
       AI_BASE_URL: http://ai:8000
       SERVER_BASE_URL: http://app:4000/graphql
       LLM_BASE_URL: ${OLLAMA_BASEURL}
       JWT_SECRET: ${JWT_SECRET}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      QUEUE_NAME: ${QUEUE_NAME}
+      DEAD_LETTER_EXCHANGE_NAME: ${DEAD_LETTER_EXCHANGE_NAME}
+      DEAD_LETTER_QUEUE_NAME: ${DEAD_LETTER_QUEUE_NAME}
     depends_on:
       app:
         condition: service_started
